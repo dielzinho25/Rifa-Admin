@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#121212">
+  <title>Painel Administrativo V13 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css?v=11">
+</head>
+<body>
+<header class="topo">
+  <div class="topo-conteudo">
+    <span class="selo">ADMIN • FIREBASE V13</span>
+    <h1>Painel administrativo</h1>
+    <p>Cadastro, perfil, notificações e sessão permanente.</p>
+  </div>
+</header>
+<main class="container">
+  <section class="card" id="acessoBox">
+    <div class="abas-acesso">
+      <button id="abaLogin" class="aba ativa" type="button">Entrar</button>
+      <button id="abaCadastro" class="aba" type="button">Criar cadastro</button>
+    </div>
+
+    <div id="loginForm">
+      <h2>Entrar</h2>
+      <div class="form-grid">
+        <label>E-mail<input id="adminEmail" type="email" autocomplete="email" placeholder="seuemail@gmail.com"></label>
+        <label>Senha<input id="adminSenha" type="password" autocomplete="current-password" placeholder="Sua senha"></label>
+      </div>
+      <div class="linha-botoes">
+        <button id="btnEntrar" class="botao principal" type="button">Entrar</button>
+        <button id="btnEsqueciSenha" class="botao secundario" type="button">Esqueci a senha</button>
+      </div>
+    </div>
+
+    <div id="cadastroForm" class="oculto">
+      <h2>Criar conta administrativa</h2>
+      <div class="form-grid">
+        <label>Nome completo<input id="cadNome" autocomplete="name" placeholder="Nome completo"></label>
+        <label>Telefone<input id="cadTelefone" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000"></label>
+        <label>E-mail<input id="cadEmail" type="email" autocomplete="email" placeholder="seuemail@gmail.com"></label>
+        <label>Senha<input id="cadSenha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></label>
+        <label>Confirmar senha<input id="cadConfirmarSenha" type="password" autocomplete="new-password" placeholder="Repita a senha"></label>
+      </div>
+      <button id="btnCadastrar" class="botao principal" type="button">Criar cadastro</button>
+      <p class="texto-apoio">A nova conta ficará aguardando aprovação de um administrador já autorizado.</p>
+    </div>
+    <p id="adminMensagem" class="aviso-pagamento"></p>
+  </section>
+
+  <section id="aguardandoBox" class="card oculto">
+    <h2>⏳ Cadastro aguardando aprovação</h2>
+    <p>Sua conta foi criada, mas ainda não foi autorizada para abrir o painel.</p>
+    <div class="linha-botoes">
+      <button id="btnAtualizarAprovacao" class="botao principal" type="button">Verificar novamente</button>
+      <button id="btnSairAguardando" class="botao cancelar" type="button">Sair</button>
+    </div>
+  </section>
+
+  <section id="barraAdmin" class="card oculto">
+    <div class="cabecalho-card">
+      <div class="perfil-resumo">
+        <div id="avatarAdmin" class="avatar-admin">A</div>
+        <div><h2 id="adminLogado">Administrador</h2><p id="adminStatus" class="texto-apoio">Online</p></div>
+      </div>
+      <div class="linha-botoes">
+        <button id="btnTema" class="botao secundario" type="button">🌙 Modo escuro</button>
+        <button id="btnNotificacoes" class="botao secundario" type="button">🔔 Ativar avisos</button>
+        <button id="btnSair" class="botao cancelar" type="button">🚪 Sair</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="perfilAdmin" class="card oculto">
+    <details>
+      <summary><strong>👤 Meu perfil</strong></summary>
+      <div class="form-grid espaco-topo">
+        <label>Nome<input id="perfilNome"></label>
+        <label>Telefone<input id="perfilTelefone" inputmode="tel"></label>
+        <label>E-mail<input id="perfilEmail" type="email"></label>
+        <label>Foto (URL opcional)<input id="perfilFoto" type="url" placeholder="https://..."></label>
+      </div>
+      <div class="linha-botoes">
+        <button id="btnSalvarPerfil" class="botao principal" type="button">Salvar perfil</button>
+        <button id="btnAlterarSenha" class="botao secundario" type="button">Alterar senha</button>
+      </div>
+      <p id="perfilUltimoAcesso" class="texto-apoio"></p>
+    </details>
+  </section>
+
+  <section id="dashboard" class="card oculto"><h2>📊 Visão geral da rifa</h2><div class="dashboard-grid"><div class="dash-item"><span>Disponíveis</span><strong id="dashLivres">100</strong></div><div class="dash-item"><span>Reservados</span><strong id="dashReservados">0</strong></div><div class="dash-item"><span>Confirmados</span><strong id="dashConfirmados">0</strong></div><div class="dash-item"><span>Participantes</span><strong id="dashParticipantes">0</strong></div><div class="dash-item"><span>Arrecadado</span><strong id="dashArrecadado">R$ 0,00</strong></div></div><div id="statusFerramentas" class="status-operacao">Ferramentas prontas para uso.</div><div class="acoes-topo-admin"><button id="btnExportarCsv" class="botao secundario" type="button">📄 Exportar CSV</button><button id="btnBackup" class="botao secundario" type="button">📥 Baixar backup</button><label class="botao secundario arquivo-btn">📤 Restaurar backup<input id="arquivoBackup" type="file" accept="application/json" hidden></label></div></section>
+
+  <section id="novosAdmins" class="card oculto">
+    <h2>🛡️ Aprovação de administradores</h2>
+    <p class="texto-apoio">Aprove ou recuse novos cadastros sem abrir o Firebase.</p>
+    <div id="listaAdminsPendentes"></div>
+  </section>
+
+  <section id="configPagamento" class="card oculto"><h2>Links do Mercado Pago</h2><p class="texto-apoio">Cadastre um link para cada quantidade.</p><div class="form-grid"><label>Quantidade<input id="quantidadeLink" type="number" min="1" max="100"></label><label>Link<input id="urlLink" type="url" placeholder="https://mpago.la/..."></label></div><button id="btnSalvarLink" class="botao principal" type="button">Salvar link</button><div id="listaLinks"></div></section>
+  <section id="configPix" class="card oculto"><h2>Chave Pix</h2><div class="form-grid"><label>Chave Pix<input id="chavePix"></label><label>Nome do recebedor<input id="nomeRecebedorPix"></label></div><button id="btnSalvarPix" class="botao principal" type="button">Salvar chave Pix</button><button id="btnExcluirPix" class="botao excluir" type="button">🔒 Excluir chave Pix</button><p id="pixAdminMensagem" class="texto-apoio"></p></section>
+  <section id="sorteioAdmin" class="card oculto"><div class="cabecalho-card"><div><h2>🏆 Sorteio do prêmio</h2><p class="texto-apoio">Somente números confirmados participam.</p></div><a class="botao vencedor-btn" href="sorteio.html">Entrar na tela de sorteio</a></div></section>
+  <section id="painel" class="card oculto"><div class="cabecalho-card"><div><h2>Reservas</h2><p id="contadorReservas"></p></div><div class="acoes-topo-admin"><button id="btnExcluirCanceladas" class="botao excluir-suave">🔒 Excluir canceladas</button><button id="btnExcluirReservadas" class="botao excluir-alerta">🔒 Excluir reservadas</button><button id="btnExcluirConfirmadas" class="botao excluir-perigo">🔒 Excluir confirmadas</button></div></div><label>Pesquisar<input id="pesquisa" placeholder="Nome, telefone, CPF, código ou número"></label><div id="listaReservas"></div></section>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="firebase-config.js?v=11"></script>
+<script src="admin.js?v=11"></script>
+</body></html>
