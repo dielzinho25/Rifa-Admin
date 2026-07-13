@@ -20,3 +20,12 @@ body.tema-escuro{background:#0e0f12;color:#f4f4f4}body.tema-escuro .card{backgro
 /* V13: números do painel sempre visíveis */
 .dash-item strong{color:#111827!important;text-shadow:none!important}.tema-escuro .dash-item strong{color:#111827!important}.dash-item.carregando strong{opacity:.55}
 .status-operacao{margin-top:12px;padding:10px 12px;border-radius:10px;background:#101218;color:#d9dde5}.status-operacao.sucesso{background:#174f2b;color:#bdf4ce}.status-operacao.erro{background:#6c2327;color:#ffd0d3}
+
+.aviso-interno{position:fixed;left:16px;right:16px;top:16px;z-index:9999;display:flex;flex-direction:column;gap:5px;padding:16px 18px;border-radius:16px;background:#15251b;color:#fff;border:1px solid #2f9f54;box-shadow:0 12px 35px rgba(0,0,0,.4);transform:translateY(-160%);opacity:0;transition:.25s ease}.aviso-interno.mostrar{transform:translateY(0);opacity:1}.aviso-interno strong{font-size:1.05rem}.aviso-interno span{opacity:.92}.status-operacao.erro{color:#ff9da7}.status-operacao.sucesso{color:#83e2a0}
+
+/* V15 */
+textarea{width:100%;box-sizing:border-box;border:1px solid #343944;border-radius:16px;background:#101217;color:#f5f5f5;padding:16px;font:inherit;resize:vertical}
+.premio-box{overflow:hidden}.banner-premio{display:block;width:100%;max-height:360px;object-fit:cover;border-radius:18px;margin-bottom:18px}.texto-pre{white-space:pre-wrap;line-height:1.65}.status-aberto{color:#3ddc84!important;font-weight:800}.status-fechado{color:#ff6b72!important;font-weight:800}.vendas-fechadas{opacity:.8}.vendas-fechadas form{pointer-events:none}.config-destaque{border-color:#d9a31a}
+
+/* V15.2 — configuração retrátil */
+.config-retratil>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;font-size:1.65rem;font-weight:900;padding:2px 0}.config-retratil>summary::-webkit-details-marker{display:none}.config-retratil>summary small{font-size:.82rem;font-weight:700;color:#aeb4bf}.config-retratil>summary::after{content:"＋";width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#363c47;color:#fff;font-size:1.5rem;flex:0 0 auto}.config-retratil[open]>summary::after{content:"−"}.config-conteudo{padding-top:18px;border-top:1px solid #30353f;margin-top:16px}.config-retratil:not([open]) .config-conteudo{display:none}@media(max-width:620px){.config-retratil>summary{font-size:1.35rem}.config-retratil>summary small{display:none}}

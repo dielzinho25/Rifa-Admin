@@ -1,10 +1,10 @@
-const CACHE = 'rifa-admin-v13';
+const CACHE = 'rifa-admin-v15-2';
 const ARQUIVOS = [
   './',
   './index.html',
-  './style.css?v=11',
-  './admin.js?v=11',
-  './firebase-config.js?v=11',
+  './style.css?v=15.2',
+  './admin.js?v=15.2',
+  './firebase-config.js?v=15.2',
   './sorteio.html',
   './sorteio.js',
   './manifest.json',

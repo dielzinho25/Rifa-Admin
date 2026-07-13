@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#121212">
-  <title>Painel Administrativo V13 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
+  <title>Painel Administrativo V15.2 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
 <header class="topo">
   <div class="topo-conteudo">
-    <span class="selo">ADMIN • FIREBASE V13</span>
+    <span class="selo">ADMIN • FIREBASE V15</span>
     <h1>Painel administrativo</h1>
-    <p>Cadastro, perfil, notificações e sessão permanente.</p>
+    <p>Controle completo da rifa pelo painel, sem editar código.</p>
   </div>
 </header>
 <main class="container">
@@ -95,7 +95,40 @@
   <section id="novosAdmins" class="card oculto">
     <h2>🛡️ Aprovação de administradores</h2>
     <p class="texto-apoio">Aprove ou recuse novos cadastros sem abrir o Firebase.</p>
+    <button id="btnRecarregarPendentes" class="botao secundario" type="button">🔄 Verificar novamente</button>
+    <p id="statusPendentes" class="status-operacao" aria-live="polite"></p>
     <div id="listaAdminsPendentes"></div>
+  </section>
+
+
+  <section id="configRifa" class="card oculto config-destaque">
+    <details class="config-retratil">
+      <summary>
+        <span>⚙️ Configuração da rifa</span>
+        <small>Toque para abrir ou fechar</small>
+      </summary>
+      <div class="config-conteudo">
+        <p class="texto-apoio">As alterações são salvas no Firebase e aparecem para os clientes em tempo real.</p>
+        <div class="form-grid">
+          <label>Nome da rifa<input id="cfgNomeRifa" maxlength="80" placeholder="Rifa Online"></label>
+          <label>Valor de cada número (R$)<input id="cfgPrecoNumero" type="number" min="0.01" step="0.01" inputmode="decimal"></label>
+          <label>Quantidade de números<input id="cfgQuantidadeNumeros" type="number" min="1" max="1000" step="1"></label>
+          <label>Nome do prêmio<input id="cfgPremio" maxlength="100" placeholder="Prêmio principal"></label>
+          <label>Data do sorteio<input id="cfgDataSorteio" type="date"></label>
+          <label>Hora do sorteio<input id="cfgHoraSorteio" type="time"></label>
+          <label>Banner/foto do prêmio (URL)<input id="cfgBanner" type="url" placeholder="https://..."></label>
+          <label>WhatsApp de atendimento<input id="cfgWhatsapp" inputmode="tel" placeholder="5534999999999"></label>
+        </div>
+        <label>Descrição do prêmio<textarea id="cfgDescricao" rows="3" placeholder="Descreva o prêmio"></textarea></label>
+        <label>Regulamento<textarea id="cfgRegulamento" rows="5" placeholder="Regras e informações da rifa"></textarea></label>
+        <label class="aceite"><input id="cfgVendasAbertas" type="checkbox"><span>Vendas abertas para novas reservas</span></label>
+        <div class="linha-botoes">
+          <button id="btnSalvarConfigRifa" class="botao principal" type="button">💾 Salvar configurações</button>
+          <button id="btnRecarregarConfigRifa" class="botao secundario" type="button">🔄 Recarregar</button>
+        </div>
+        <p id="configRifaMensagem" class="status-operacao"></p>
+      </div>
+    </details>
   </section>
 
   <section id="configPagamento" class="card oculto"><h2>Links do Mercado Pago</h2><p class="texto-apoio">Cadastre um link para cada quantidade.</p><div class="form-grid"><label>Quantidade<input id="quantidadeLink" type="number" min="1" max="100"></label><label>Link<input id="urlLink" type="url" placeholder="https://mpago.la/..."></label></div><button id="btnSalvarLink" class="botao principal" type="button">Salvar link</button><div id="listaLinks"></div></section>
@@ -106,6 +139,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="firebase-config.js?v=11"></script>
-<script src="admin.js?v=11"></script>
+<script src="firebase-config.js?v=15.2"></script>
+<script src="admin.js?v=15.2"></script>
 </body></html>
