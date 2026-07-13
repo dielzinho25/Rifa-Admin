@@ -29,3 +29,5 @@ textarea{width:100%;box-sizing:border-box;border:1px solid #343944;border-radius
 
 /* V15.2 — configuração retrátil */
 .config-retratil>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;font-size:1.65rem;font-weight:900;padding:2px 0}.config-retratil>summary::-webkit-details-marker{display:none}.config-retratil>summary small{font-size:.82rem;font-weight:700;color:#aeb4bf}.config-retratil>summary::after{content:"＋";width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#363c47;color:#fff;font-size:1.5rem;flex:0 0 auto}.config-retratil[open]>summary::after{content:"−"}.config-conteudo{padding-top:18px;border-top:1px solid #30353f;margin-top:16px}.config-retratil:not([open]) .config-conteudo{display:none}@media(max-width:620px){.config-retratil>summary{font-size:1.35rem}.config-retratil>summary small{display:none}}
+
+.rodape-versao{text-align:center;padding:24px 16px 38px;color:#8f96a3;font-size:13px}.rodape-versao p{margin:4px 0}

@@ -1,7 +1,7 @@
 {
-  "name": "Painel da Rifa V15",
+  "name": "Painel da Rifa V15.5",
   "short_name": "Rifa Admin",
-  "start_url": "./index.html",
+  "start_url": "./index.html?v=15.5",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#121212",
@@ -18,5 +18,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "./"
 }
