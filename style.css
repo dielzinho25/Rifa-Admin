@@ -31,3 +31,14 @@ textarea{width:100%;box-sizing:border-box;border:1px solid #343944;border-radius
 .config-retratil>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;font-size:1.65rem;font-weight:900;padding:2px 0}.config-retratil>summary::-webkit-details-marker{display:none}.config-retratil>summary small{font-size:.82rem;font-weight:700;color:#aeb4bf}.config-retratil>summary::after{content:"＋";width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#363c47;color:#fff;font-size:1.5rem;flex:0 0 auto}.config-retratil[open]>summary::after{content:"−"}.config-conteudo{padding-top:18px;border-top:1px solid #30353f;margin-top:16px}.config-retratil:not([open]) .config-conteudo{display:none}@media(max-width:620px){.config-retratil>summary{font-size:1.35rem}.config-retratil>summary small{display:none}}
 
 .rodape-versao{text-align:center;padding:24px 16px 38px;color:#8f96a3;font-size:13px}.rodape-versao p{margin:4px 0}
+
+/* V15.7 — resultado atual e histórico de sorteios retráteis */
+.bloco-resultado-admin{background:#111318;border:1px solid #30353f;border-radius:18px;padding:18px;margin-top:16px}
+.bloco-resultado-admin h3{margin:0 0 6px;font-size:24px}
+.resultado-admin-vazio{padding:18px;border:1px dashed #454b58;border-radius:14px;color:#aeb4c0;text-align:center}
+.resultado-atual-card,.historico-sorteio-item{background:#191c22;border:1px solid #343a46;border-radius:15px;padding:16px;margin-top:12px}
+.resultado-atual-card strong,.historico-sorteio-item strong{font-size:19px}
+.resultado-atual-card p,.historico-sorteio-item p{margin:7px 0;color:#d9dde5}
+.historico-sorteio-item .linha-botoes{margin-top:12px}
+.lista-historico-sorteios{max-height:620px;overflow:auto;padding-right:3px}
+@media(max-width:700px){.bloco-resultado-admin .cabecalho-card{align-items:stretch;flex-direction:column}.bloco-resultado-admin .cabecalho-card .botao{width:100%}.lista-historico-sorteios{max-height:520px}}

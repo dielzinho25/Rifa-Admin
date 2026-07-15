@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#121212">
-  <title>Painel Administrativo V15.6 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="manifest" href="manifest.json?v=15.6">
+  <title>Painel Administrativo V15.7 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json?v=15.7">
   <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
 <header class="topo">
   <div class="topo-conteudo">
-    <span class="selo">ADMIN • FIREBASE V15.6</span>
+    <span class="selo">ADMIN • FIREBASE V15.7</span>
     <h1>Painel administrativo</h1>
     <p>Controle completo da rifa pelo painel, sem editar código.</p>
   </div>
@@ -150,12 +150,39 @@
   </section>
   <section id="configPix" class="card oculto"><h2>Chave Pix</h2><div class="form-grid"><label>Chave Pix<input id="chavePix"></label><label>Nome do recebedor<input id="nomeRecebedorPix"></label></div><button id="btnSalvarPix" class="botao principal" type="button">Salvar chave Pix</button><button id="btnExcluirPix" class="botao excluir" type="button">🔒 Excluir chave Pix</button><p id="pixAdminMensagem" class="texto-apoio"></p></section>
   <section id="sorteioAdmin" class="card oculto"><div class="cabecalho-card"><div><h2>🏆 Sorteio do prêmio</h2><p class="texto-apoio">Somente números confirmados participam.</p></div><a class="botao vencedor-btn" href="sorteio.html">Entrar na tela de sorteio</a></div></section>
+
+  <section id="resultadosSorteioAdmin" class="card oculto config-destaque">
+    <details class="config-retratil">
+      <summary>
+        <span>🏆 Resultado e histórico dos sorteios</span>
+        <small>Toque para abrir ou fechar</small>
+      </summary>
+      <div class="config-conteudo">
+        <section class="bloco-resultado-admin">
+          <div class="cabecalho-card">
+            <div><h3>Resultado atual</h3><p class="texto-apoio">É o vencedor exibido na página pública.</p></div>
+            <button id="btnApagarResultadoAtual" class="botao excluir-perigo" type="button">🔒 Apagar resultado atual</button>
+          </div>
+          <div id="resultadoAtualAdmin" class="resultado-admin-vazio">Nenhum resultado publicado.</div>
+        </section>
+        <section class="bloco-resultado-admin">
+          <div class="cabecalho-card">
+            <div><h3>Histórico de sorteios</h3><p id="contadorHistoricoSorteios" class="texto-apoio">0 resultado(s)</p></div>
+            <button id="btnApagarTodoHistorico" class="botao excluir-alerta" type="button">🔒 Limpar todo o histórico</button>
+          </div>
+          <div id="listaHistoricoSorteios" class="lista-historico-sorteios"><p class="texto-apoio">Nenhum sorteio salvo no histórico.</p></div>
+        </section>
+        <p id="statusResultadosSorteio" class="status-operacao"></p>
+      </div>
+    </details>
+  </section>
+
   <section id="painel" class="card oculto"><div class="cabecalho-card"><div><h2>Reservas</h2><p id="contadorReservas"></p></div><div class="acoes-topo-admin"><button id="btnExcluirCanceladas" class="botao excluir-suave">🔒 Excluir canceladas</button><button id="btnExcluirReservadas" class="botao excluir-alerta">🔒 Excluir reservadas</button><button id="btnExcluirConfirmadas" class="botao excluir-perigo">🔒 Excluir confirmadas</button></div></div><label>Pesquisar<input id="pesquisa" placeholder="Nome, telefone, CPF, código ou número"></label><div id="listaReservas"></div></section>
 </main>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="firebase-config.js?v=15.4"></script>
-<script src="admin.js?v=15.6"></script>
-<footer class="rodape-versao"><p>Versão: V15.6</p><p>Última atualização: 13/07/2026</p></footer>
+<script src="firebase-config.js?v=15.7"></script>
+<script src="admin.js?v=15.7"></script>
+<footer class="rodape-versao"><p>Versão: V15.7</p><p>Última atualização: 15/07/2026</p></footer>
 </body></html>

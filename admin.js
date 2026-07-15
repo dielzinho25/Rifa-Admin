@@ -2,7 +2,7 @@
 'use strict';
 let reservasCache={}, numerosCache={}, linksCache={}, usuarioAtual=null, configRifa={precoNumero:20,quantidadeNumeros:100,vendasAbertas:true}, ouvindo=false, primeiraLeituraReservas=true, resumoAnterior={total:0,pagamentos:0};
 const $=id=>document.getElementById(id), moeda=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}), esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const secoes=['barraAdmin','perfilAdmin','dashboard','novosAdmins','configRifa','configPagamento','configPix','sorteioAdmin','painel'];
+const secoes=['barraAdmin','perfilAdmin','dashboard','novosAdmins','configRifa','configPagamento','configPix','sorteioAdmin','resultadosSorteioAdmin','painel'];
 function mensagem(t,erro=false){const el=$('adminMensagem');el.textContent=t||'';el.style.color=erro?'#b00020':'';}
 async function adminRef(uid){
   if(!uid)return false;
@@ -17,6 +17,52 @@ async function adminRef(uid){
 }
 function proteger(msg,frase){if(!confirm(msg+'\n\nEsta ação não poderá ser desfeita.'))return false;if(frase&&prompt('Digite exatamente: '+frase)!==frase){alert('Confirmação incorreta.');return false;}return true;}
 function statusNome(s){return s==='aguardando_confirmacao'?'reservado':s==='pagamento_informado'?'pagamento informado':s==='confirmado'?'confirmado':'cancelado';}
+function formatarDataSorteio(ts){return ts?new Date(ts).toLocaleString('pt-BR'):'data não informada';}
+function normalizarResultado(r){return r&&typeof r==='object'?r:null;}
+function desenharResultadoAtual(resultado){
+  const box=$('resultadoAtualAdmin'),btn=$('btnApagarResultadoAtual');
+  resultado=normalizarResultado(resultado);
+  if(!resultado){box.className='resultado-admin-vazio';box.textContent='Nenhum resultado publicado.';btn.disabled=true;return;}
+  btn.disabled=false;box.className='resultado-atual-card';
+  box.innerHTML='<strong>🏆 Número '+esc(String(resultado.numero||'—').padStart(2,'0'))+'</strong>'+
+    '<p><b>Vencedor:</b> '+esc(resultado.nome||'Não informado')+'</p>'+
+    '<p><b>Telefone:</b> '+esc(resultado.telefone||'Não informado')+'</p>'+
+    '<p><b>Reserva:</b> '+esc(resultado.reservaId||'Não informada')+'</p>'+
+    '<p><b>Publicado:</b> '+esc(formatarDataSorteio(resultado.publicadoEm))+'</p>';
+}
+function desenharHistoricoSorteios(dados){
+  const lista=$('listaHistoricoSorteios'),contador=$('contadorHistoricoSorteios'),btnTudo=$('btnApagarTodoHistorico');
+  lista.innerHTML='';
+  const itens=Object.entries(dados||{}).map(([id,r])=>({id,...(r||{})})).sort((a,b)=>(b.publicadoEm||0)-(a.publicadoEm||0));
+  contador.textContent=itens.length+' resultado(s)';btnTudo.disabled=!itens.length;
+  if(!itens.length){lista.innerHTML='<p class="texto-apoio">Nenhum sorteio salvo no histórico.</p>';return;}
+  itens.forEach(r=>{
+    const card=document.createElement('article');card.className='historico-sorteio-item';
+    card.innerHTML='<strong>🎟️ Número '+esc(String(r.numero||'—').padStart(2,'0'))+'</strong>'+
+      '<p><b>Vencedor:</b> '+esc(r.nome||'Não informado')+'</p>'+
+      '<p><b>Reserva:</b> '+esc(r.reservaId||'Não informada')+'</p>'+
+      '<p><b>Data:</b> '+esc(formatarDataSorteio(r.publicadoEm))+'</p><div class="linha-botoes"></div>';
+    const botao=document.createElement('button');botao.type='button';botao.className='botao excluir';botao.textContent='🔒 Apagar este histórico';
+    botao.onclick=()=>apagarHistoricoSorteio(r.id,r.numero);
+    card.querySelector('.linha-botoes').appendChild(botao);lista.appendChild(card);
+  });
+}
+function statusResultado(t,erro=false){const el=$('statusResultadosSorteio');if(!el)return;el.textContent=t||'';el.className='status-operacao '+(erro?'erro':t?'sucesso':'');}
+async function apagarResultadoAtual(){
+  if(!proteger('Apagar o resultado atual da página pública?','APAGAR RESULTADO'))return;
+  try{statusResultado('Apagando resultado atual…');await db.ref('rifa/resultadoAtual').remove();statusResultado('Resultado atual apagado. O histórico foi mantido.');}
+  catch(e){statusResultado('Erro ao apagar resultado: '+e.message,true);}
+}
+async function apagarHistoricoSorteio(id,numero){
+  if(!id||!proteger('Apagar do histórico o sorteio do número '+numero+'?'))return;
+  try{statusResultado('Apagando item do histórico…');await db.ref('rifa/historicoSorteios/'+id).remove();statusResultado('Item removido do histórico.');}
+  catch(e){statusResultado('Erro ao apagar histórico: '+e.message,true);}
+}
+async function apagarTodoHistorico(){
+  if(!proteger('Apagar TODOS os resultados do histórico de sorteios?','LIMPAR HISTORICO'))return;
+  try{statusResultado('Limpando histórico…');await db.ref('rifa/historicoSorteios').remove();statusResultado('Todo o histórico foi apagado. O resultado atual foi mantido.');}
+  catch(e){statusResultado('Erro ao limpar histórico: '+e.message,true);}
+}
 function trocarAba(tipo){const cadastro=tipo==='cadastro';$('loginForm').classList.toggle('oculto',cadastro);$('cadastroForm').classList.toggle('oculto',!cadastro);$('abaLogin').classList.toggle('ativa',!cadastro);$('abaCadastro').classList.toggle('ativa',cadastro);mensagem('');}
 function esconderTudo(){secoes.forEach(id=>$(id).classList.add('oculto'));$('acessoBox').classList.add('oculto');$('aguardandoBox').classList.add('oculto');}
 function mostrarAcesso(){esconderTudo();$('acessoBox').classList.remove('oculto');}
@@ -155,13 +201,13 @@ async function salvarConfigRifa(){
   try{await db.ref('rifa/configPublica/rifa').set(dados);configRifa=Object.assign({},dados,{atualizadoEm:Date.now()});msg.textContent='Configurações salvas com sucesso.';msg.className='status-operacao sucesso';desenharLinks(((await db.ref('rifa/configPublica/pagamentos/links').once('value')).val())||{});atualizarDashboard();}
   catch(e){msg.textContent='Erro ao salvar: '+e.message;msg.className='status-operacao erro';}
 }
-function ouvirTudo(){db.ref('rifa/configPublica/rifa').on('value',snap=>{configRifa=Object.assign({precoNumero:20,quantidadeNumeros:100,vendasAbertas:true},snap.val()||{});carregarConfigRifa();desenharLinks(linksCache);atualizarDashboard();});db.ref('rifa/configPublica/pagamentos').on('value',s=>{const p=s.val()||{},links=p.links||{},pix=p.pix||{};$('chavePix').value=pix.chave||'';$('nomeRecebedorPix').value=pix.nome||'';$('pixAdminMensagem').textContent=pix.chave?'Chave cadastrada: '+pix.chave:'Nenhuma chave cadastrada.';desenharLinks(links);});db.ref('rifa/numeros').on('value',s=>{numerosCache=s.val()||{};atualizarDashboard();},e=>statusFerramenta('Erro ao ler números: '+e.message,'erro'));db.ref('rifa/reservas').on('value',s=>{reservasCache=s.val()||{};const vals=Object.values(reservasCache),resumo={total:vals.length,pagamentos:vals.filter(r=>r.status==='pagamento_informado').length};if(!primeiraLeituraReservas){if(resumo.total>resumoAnterior.total)avisar('Nova reserva','Uma nova reserva foi registrada.');if(resumo.pagamentos>resumoAnterior.pagamentos)avisar('Pagamento informado','Um cliente informou que realizou o pagamento.');}primeiraLeituraReservas=false;resumoAnterior=resumo;desenharReservas();atualizarDashboard();statusFerramenta('Painel atualizado em '+new Date().toLocaleTimeString('pt-BR')+'.','sucesso');},e=>statusFerramenta('Erro ao ler reservas: '+e.message,'erro'));}
+function ouvirTudo(){db.ref('rifa/resultadoAtual').on('value',s=>desenharResultadoAtual(s.val()),e=>statusResultado('Erro ao ler resultado atual: '+e.message,true));db.ref('rifa/historicoSorteios').on('value',s=>desenharHistoricoSorteios(s.val()||{}),e=>statusResultado('Erro ao ler histórico: '+e.message,true));db.ref('rifa/configPublica/rifa').on('value',snap=>{configRifa=Object.assign({precoNumero:20,quantidadeNumeros:100,vendasAbertas:true},snap.val()||{});carregarConfigRifa();desenharLinks(linksCache);atualizarDashboard();});db.ref('rifa/configPublica/pagamentos').on('value',s=>{const p=s.val()||{},links=p.links||{},pix=p.pix||{};$('chavePix').value=pix.chave||'';$('nomeRecebedorPix').value=pix.nome||'';$('pixAdminMensagem').textContent=pix.chave?'Chave cadastrada: '+pix.chave:'Nenhuma chave cadastrada.';desenharLinks(links);});db.ref('rifa/numeros').on('value',s=>{numerosCache=s.val()||{};atualizarDashboard();},e=>statusFerramenta('Erro ao ler números: '+e.message,'erro'));db.ref('rifa/reservas').on('value',s=>{reservasCache=s.val()||{};const vals=Object.values(reservasCache),resumo={total:vals.length,pagamentos:vals.filter(r=>r.status==='pagamento_informado').length};if(!primeiraLeituraReservas){if(resumo.total>resumoAnterior.total)avisar('Nova reserva','Uma nova reserva foi registrada.');if(resumo.pagamentos>resumoAnterior.pagamentos)avisar('Pagamento informado','Um cliente informou que realizou o pagamento.');}primeiraLeituraReservas=false;resumoAnterior=resumo;desenharReservas();atualizarDashboard();statusFerramenta('Painel atualizado em '+new Date().toLocaleTimeString('pt-BR')+'.','sucesso');},e=>statusFerramenta('Erro ao ler reservas: '+e.message,'erro'));}
 
 let recarregouPorAtualizacao=false;
 async function registrarServiceWorker(){
   if(!('serviceWorker' in navigator))return;
   try{
-    const reg=await navigator.serviceWorker.register('service-worker.js?v=15.6',{updateViaCache:'none'});
+    const reg=await navigator.serviceWorker.register('service-worker.js?v=15.7',{updateViaCache:'none'});
     await reg.update().catch(()=>{});
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
       if(recarregouPorAtualizacao)return;
@@ -172,7 +218,7 @@ async function registrarServiceWorker(){
   }catch(_){ }
 }
 
-function init(){auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});$('abaLogin').onclick=()=>trocarAba('login');$('abaCadastro').onclick=()=>trocarAba('cadastro');$('btnEntrar').onclick=entrar;$('btnCadastrar').onclick=cadastrar;$('btnEsqueciSenha').onclick=esqueciSenha;$('btnAtualizarAprovacao').onclick=verificarAprovacao;$('btnSairAguardando').onclick=()=>auth.signOut();$('btnSair').onclick=async()=>{if(usuarioAtual)await db.ref('rifa/administradores/'+usuarioAtual.uid).update({online:false,ultimoAcesso:firebase.database.ServerValue.TIMESTAMP});await auth.signOut();};$('btnSalvarPerfil').onclick=salvarPerfil;$('btnAlterarSenha').onclick=alterarSenha;$('btnTema').onclick=()=>aplicarTema(!document.body.classList.contains('tema-escuro'));$('btnNotificacoes').onclick=ativarNotificacoes;$('btnRecarregarPendentes').onclick=recarregarPendentes;$('btnSalvarConfigRifa').onclick=salvarConfigRifa;$('btnRecarregarConfigRifa').onclick=carregarConfigRifa;$('btnSalvarLink').onclick=salvarLink;$('btnSalvarPix').onclick=salvarPix;$('btnExcluirPix').onclick=()=>proteger('Excluir chave Pix?')&&db.ref('rifa/configPublica/pagamentos/pix').remove();$('pesquisa').oninput=desenharReservas;$('btnExcluirCanceladas').onclick=()=>excluirStatus('cancelado');$('btnExcluirReservadas').onclick=()=>excluirStatus('reservado');$('btnExcluirConfirmadas').onclick=()=>excluirStatus('confirmado');$('btnExportarCsv').onclick=exportarCsv;$('btnBackup').onclick=baixarBackup;$('arquivoBackup').onchange=e=>restaurarBackup(e.target.files[0]);$('adminSenha').addEventListener('keydown',e=>{if(e.key==='Enter')entrar();});if('serviceWorker'in navigator)registrarServiceWorker();auth.onAuthStateChanged(async u=>{
+function init(){auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});$('abaLogin').onclick=()=>trocarAba('login');$('abaCadastro').onclick=()=>trocarAba('cadastro');$('btnEntrar').onclick=entrar;$('btnCadastrar').onclick=cadastrar;$('btnEsqueciSenha').onclick=esqueciSenha;$('btnAtualizarAprovacao').onclick=verificarAprovacao;$('btnSairAguardando').onclick=()=>auth.signOut();$('btnSair').onclick=async()=>{if(usuarioAtual)await db.ref('rifa/administradores/'+usuarioAtual.uid).update({online:false,ultimoAcesso:firebase.database.ServerValue.TIMESTAMP});await auth.signOut();};$('btnSalvarPerfil').onclick=salvarPerfil;$('btnAlterarSenha').onclick=alterarSenha;$('btnTema').onclick=()=>aplicarTema(!document.body.classList.contains('tema-escuro'));$('btnNotificacoes').onclick=ativarNotificacoes;$('btnRecarregarPendentes').onclick=recarregarPendentes;$('btnSalvarConfigRifa').onclick=salvarConfigRifa;$('btnRecarregarConfigRifa').onclick=carregarConfigRifa;$('btnSalvarLink').onclick=salvarLink;$('btnSalvarPix').onclick=salvarPix;$('btnExcluirPix').onclick=()=>proteger('Excluir chave Pix?')&&db.ref('rifa/configPublica/pagamentos/pix').remove();$('btnApagarResultadoAtual').onclick=apagarResultadoAtual;$('btnApagarTodoHistorico').onclick=apagarTodoHistorico;$('pesquisa').oninput=desenharReservas;$('btnExcluirCanceladas').onclick=()=>excluirStatus('cancelado');$('btnExcluirReservadas').onclick=()=>excluirStatus('reservado');$('btnExcluirConfirmadas').onclick=()=>excluirStatus('confirmado');$('btnExportarCsv').onclick=exportarCsv;$('btnBackup').onclick=baixarBackup;$('arquivoBackup').onchange=e=>restaurarBackup(e.target.files[0]);$('adminSenha').addEventListener('keydown',e=>{if(e.key==='Enter')entrar();});if('serviceWorker'in navigator)registrarServiceWorker();auth.onAuthStateChanged(async u=>{
   usuarioAtual=u;
   if(!u)return mostrarAcesso();
   mensagemAguardando('Verificando autorização…');
