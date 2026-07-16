@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#121212">
-  <title>Painel Administrativo V15.8 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="manifest" href="manifest.json?v=15.7">
+  <title>Painel Administrativo V15.9 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.json?v=15.9">
   <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
 <header class="topo">
   <div class="topo-conteudo">
-    <span class="selo">ADMIN • FIREBASE V15.8</span>
+    <span class="selo">ADMIN • FIREBASE V15.9</span>
     <h1>Painel administrativo</h1>
     <p>Controle completo da rifa pelo painel, sem editar código.</p>
   </div>
@@ -195,12 +195,30 @@
     </details>
   </section>
 
+
+  <section id="afiliadosAdmin" class="card oculto config-destaque">
+    <details class="config-retratil">
+      <summary><span>🤝 Programa de indicações</span><small>Toque para abrir ou fechar</small></summary>
+      <div class="config-conteudo">
+        <p class="texto-apoio">A comissão é somada somente quando você confirma o pagamento da reserva indicada.</p>
+        <div class="form-grid">
+          <label>Comissão por número confirmado (R$)<input id="cfgComissaoNumero" type="number" min="0" step="0.01" inputmode="decimal"></label>
+          <label>Valor mínimo para pagamento (R$)<input id="cfgMinimoSaque" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        </div>
+        <label class="aceite"><input id="cfgAfiliadosAtivo" type="checkbox"><span>Programa de indicações ativo</span></label>
+        <button id="btnSalvarConfigAfiliados" class="botao principal" type="button">💾 Salvar configuração</button>
+        <p id="msgConfigAfiliados" class="status-operacao"></p>
+        <div class="cabecalho-card"><div><h3>Cadastros e saldos</h3><p id="contadorAfiliados" class="texto-apoio">0 cadastro(s)</p></div><button id="btnAtualizarAfiliados" class="botao secundario" type="button">🔄 Atualizar</button></div>
+        <div id="listaAfiliados"><p class="texto-apoio">Nenhum afiliado cadastrado.</p></div>
+      </div>
+    </details>
+  </section>
   <section id="painel" class="card oculto"><div class="cabecalho-card"><div><h2>Reservas</h2><p id="contadorReservas"></p></div><div class="acoes-topo-admin"><button id="btnExcluirCanceladas" class="botao excluir-suave">🔒 Excluir canceladas</button><button id="btnExcluirReservadas" class="botao excluir-alerta">🔒 Excluir reservadas</button><button id="btnExcluirConfirmadas" class="botao excluir-perigo">🔒 Excluir confirmadas</button></div></div><label>Pesquisar<input id="pesquisa" placeholder="Nome, telefone, CPF, código ou número"></label><div id="listaReservas"></div></section>
 </main>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="firebase-config.js?v=15.7"></script>
-<script src="admin.js?v=15.7"></script>
-<footer class="rodape-versao"><p>Versão: V15.8</p><p>Última atualização: 16/07/2026</p></footer>
+<script src="firebase-config.js?v=15.9"></script>
+<script src="admin.js?v=15.9"></script>
+<footer class="rodape-versao"><p>Versão: V15.9</p><p>Última atualização: 16/07/2026</p></footer>
 </body></html>
