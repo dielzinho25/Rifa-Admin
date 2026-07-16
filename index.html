@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#121212">
-  <title>Painel Administrativo V15.7 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
+  <title>Painel Administrativo V15.8 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.json?v=15.7">
   <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
 <header class="topo">
   <div class="topo-conteudo">
-    <span class="selo">ADMIN • FIREBASE V15.7</span>
+    <span class="selo">ADMIN • FIREBASE V15.8</span>
     <h1>Painel administrativo</h1>
     <p>Controle completo da rifa pelo painel, sem editar código.</p>
   </div>
@@ -91,6 +91,24 @@
   </section>
 
   <section id="dashboard" class="card oculto"><h2>📊 Visão geral da rifa</h2><div class="dashboard-grid"><div class="dash-item"><span>Disponíveis</span><strong id="dashLivres">100</strong></div><div class="dash-item"><span>Reservados</span><strong id="dashReservados">0</strong></div><div class="dash-item"><span>Confirmados</span><strong id="dashConfirmados">0</strong></div><div class="dash-item"><span>Participantes</span><strong id="dashParticipantes">0</strong></div><div class="dash-item"><span>Arrecadado</span><strong id="dashArrecadado">R$ 0,00</strong></div></div><div id="statusFerramentas" class="status-operacao">Ferramentas prontas para uso.</div><div class="acoes-topo-admin"><button id="btnExportarCsv" class="botao secundario" type="button">📄 Exportar CSV</button><button id="btnBackup" class="botao secundario" type="button">📥 Baixar backup</button><label class="botao secundario arquivo-btn">📤 Restaurar backup<input id="arquivoBackup" type="file" accept="application/json" hidden></label></div></section>
+
+  <section id="visitasAdmin" class="card oculto config-destaque">
+    <details class="config-retratil">
+      <summary>
+        <span>👁️ Visualizações da página</span>
+        <small>Toque para abrir ou fechar</small>
+      </summary>
+      <div class="config-conteudo">
+        <p class="texto-apoio">Contagem das entradas no site público da rifa, atualizada em tempo real.</p>
+        <div class="dashboard-grid">
+          <div class="dash-item"><span>Total de visualizações</span><strong id="visitasTotal">0</strong></div>
+          <div class="dash-item"><span>Visitantes únicos</span><strong id="visitasUnicos">0</strong></div>
+          <div class="dash-item"><span>Visualizações hoje</span><strong id="visitasHoje">0</strong></div>
+        </div>
+        <p id="visitasUltimaAtualizacao" class="status-operacao">Aguardando dados do Firebase…</p>
+      </div>
+    </details>
+  </section>
 
   <section id="novosAdmins" class="card oculto">
     <h2>🛡️ Aprovação de administradores</h2>
@@ -184,5 +202,5 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="firebase-config.js?v=15.7"></script>
 <script src="admin.js?v=15.7"></script>
-<footer class="rodape-versao"><p>Versão: V15.7</p><p>Última atualização: 15/07/2026</p></footer>
+<footer class="rodape-versao"><p>Versão: V15.8</p><p>Última atualização: 16/07/2026</p></footer>
 </body></html>

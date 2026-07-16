@@ -2,7 +2,7 @@
 'use strict';
 let reservasCache={}, numerosCache={}, linksCache={}, usuarioAtual=null, configRifa={precoNumero:20,quantidadeNumeros:100,vendasAbertas:true}, ouvindo=false, primeiraLeituraReservas=true, resumoAnterior={total:0,pagamentos:0};
 const $=id=>document.getElementById(id), moeda=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}), esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const secoes=['barraAdmin','perfilAdmin','dashboard','novosAdmins','configRifa','configPagamento','configPix','sorteioAdmin','resultadosSorteioAdmin','painel'];
+const secoes=['barraAdmin','perfilAdmin','dashboard','visitasAdmin','novosAdmins','configRifa','configPagamento','configPix','sorteioAdmin','resultadosSorteioAdmin','painel'];
 function mensagem(t,erro=false){const el=$('adminMensagem');el.textContent=t||'';el.style.color=erro?'#b00020':'';}
 async function adminRef(uid){
   if(!uid)return false;
@@ -201,7 +201,29 @@ async function salvarConfigRifa(){
   try{await db.ref('rifa/configPublica/rifa').set(dados);configRifa=Object.assign({},dados,{atualizadoEm:Date.now()});msg.textContent='Configurações salvas com sucesso.';msg.className='status-operacao sucesso';desenharLinks(((await db.ref('rifa/configPublica/pagamentos/links').once('value')).val())||{});atualizarDashboard();}
   catch(e){msg.textContent='Erro ao salvar: '+e.message;msg.className='status-operacao erro';}
 }
-function ouvirTudo(){db.ref('rifa/resultadoAtual').on('value',s=>desenharResultadoAtual(s.val()),e=>statusResultado('Erro ao ler resultado atual: '+e.message,true));db.ref('rifa/historicoSorteios').on('value',s=>desenharHistoricoSorteios(s.val()||{}),e=>statusResultado('Erro ao ler histórico: '+e.message,true));db.ref('rifa/configPublica/rifa').on('value',snap=>{configRifa=Object.assign({precoNumero:20,quantidadeNumeros:100,vendasAbertas:true},snap.val()||{});carregarConfigRifa();desenharLinks(linksCache);atualizarDashboard();});db.ref('rifa/configPublica/pagamentos').on('value',s=>{const p=s.val()||{},links=p.links||{},pix=p.pix||{};$('chavePix').value=pix.chave||'';$('nomeRecebedorPix').value=pix.nome||'';$('pixAdminMensagem').textContent=pix.chave?'Chave cadastrada: '+pix.chave:'Nenhuma chave cadastrada.';desenharLinks(links);});db.ref('rifa/numeros').on('value',s=>{numerosCache=s.val()||{};atualizarDashboard();},e=>statusFerramenta('Erro ao ler números: '+e.message,'erro'));db.ref('rifa/reservas').on('value',s=>{reservasCache=s.val()||{};const vals=Object.values(reservasCache),resumo={total:vals.length,pagamentos:vals.filter(r=>r.status==='pagamento_informado').length};if(!primeiraLeituraReservas){if(resumo.total>resumoAnterior.total)avisar('Nova reserva','Uma nova reserva foi registrada.');if(resumo.pagamentos>resumoAnterior.pagamentos)avisar('Pagamento informado','Um cliente informou que realizou o pagamento.');}primeiraLeituraReservas=false;resumoAnterior=resumo;desenharReservas();atualizarDashboard();statusFerramenta('Painel atualizado em '+new Date().toLocaleTimeString('pt-BR')+'.','sucesso');},e=>statusFerramenta('Erro ao ler reservas: '+e.message,'erro'));}
+function chaveHojeVisitas(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function ouvirVisualizacoes(){
+  const hoje=chaveHojeVisitas();
+  db.ref('rifa/visitas').on('value',snap=>{
+    const dados=snap.val()||{};
+    const total=Number(dados.total||0);
+    const unicos=dados.visitantes&&typeof dados.visitantes==='object'?Object.keys(dados.visitantes).length:0;
+    const hojeTotal=Number((dados.porDia&&dados.porDia[hoje])||0);
+    if($('visitasTotal'))$('visitasTotal').textContent=String(total);
+    if($('visitasUnicos'))$('visitasUnicos').textContent=String(unicos);
+    if($('visitasHoje'))$('visitasHoje').textContent=String(hojeTotal);
+    if($('visitasUltimaAtualizacao'))$('visitasUltimaAtualizacao').textContent='Atualizado em '+new Date().toLocaleTimeString('pt-BR')+'.';
+  },e=>{
+    if($('visitasUltimaAtualizacao')){
+      $('visitasUltimaAtualizacao').textContent='Erro ao carregar visualizações: '+e.message;
+      $('visitasUltimaAtualizacao').className='status-operacao erro';
+    }
+  });
+}
+function ouvirTudo(){ouvirVisualizacoes();db.ref('rifa/resultadoAtual').on('value',s=>desenharResultadoAtual(s.val()),e=>statusResultado('Erro ao ler resultado atual: '+e.message,true));db.ref('rifa/historicoSorteios').on('value',s=>desenharHistoricoSorteios(s.val()||{}),e=>statusResultado('Erro ao ler histórico: '+e.message,true));db.ref('rifa/configPublica/rifa').on('value',snap=>{configRifa=Object.assign({precoNumero:20,quantidadeNumeros:100,vendasAbertas:true},snap.val()||{});carregarConfigRifa();desenharLinks(linksCache);atualizarDashboard();});db.ref('rifa/configPublica/pagamentos').on('value',s=>{const p=s.val()||{},links=p.links||{},pix=p.pix||{};$('chavePix').value=pix.chave||'';$('nomeRecebedorPix').value=pix.nome||'';$('pixAdminMensagem').textContent=pix.chave?'Chave cadastrada: '+pix.chave:'Nenhuma chave cadastrada.';desenharLinks(links);});db.ref('rifa/numeros').on('value',s=>{numerosCache=s.val()||{};atualizarDashboard();},e=>statusFerramenta('Erro ao ler números: '+e.message,'erro'));db.ref('rifa/reservas').on('value',s=>{reservasCache=s.val()||{};const vals=Object.values(reservasCache),resumo={total:vals.length,pagamentos:vals.filter(r=>r.status==='pagamento_informado').length};if(!primeiraLeituraReservas){if(resumo.total>resumoAnterior.total)avisar('Nova reserva','Uma nova reserva foi registrada.');if(resumo.pagamentos>resumoAnterior.pagamentos)avisar('Pagamento informado','Um cliente informou que realizou o pagamento.');}primeiraLeituraReservas=false;resumoAnterior=resumo;desenharReservas();atualizarDashboard();statusFerramenta('Painel atualizado em '+new Date().toLocaleTimeString('pt-BR')+'.','sucesso');},e=>statusFerramenta('Erro ao ler reservas: '+e.message,'erro'));}
 
 let recarregouPorAtualizacao=false;
 async function registrarServiceWorker(){

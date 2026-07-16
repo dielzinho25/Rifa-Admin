@@ -32,7 +32,7 @@ textarea{width:100%;box-sizing:border-box;border:1px solid #343944;border-radius
 
 .rodape-versao{text-align:center;padding:24px 16px 38px;color:#8f96a3;font-size:13px}.rodape-versao p{margin:4px 0}
 
-/* V15.7 — resultado atual e histórico de sorteios retráteis */
+/* V15.8 — resultado atual e histórico de sorteios retráteis */
 .bloco-resultado-admin{background:#111318;border:1px solid #30353f;border-radius:18px;padding:18px;margin-top:16px}
 .bloco-resultado-admin h3{margin:0 0 6px;font-size:24px}
 .resultado-admin-vazio{padding:18px;border:1px dashed #454b58;border-radius:14px;color:#aeb4c0;text-align:center}

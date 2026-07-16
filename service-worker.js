@@ -1,4 +1,4 @@
-const CACHE='rifa-admin-v15-7';
+const CACHE='rifa-admin-v15-8';
 const CORE=['./index.html?v=15.7','./style.css?v=15.7','./admin.js?v=15.7','./firebase-config.js?v=15.7','./sorteio.html?v=15.7','./sorteio.js?v=15.7','./manifest.json?v=15.7','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).catch(()=>{}));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim();})());});
