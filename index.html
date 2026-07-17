@@ -1,242 +1,50 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#121212">
-  <title>Painel Administrativo V15.10 da Rifa</title><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="manifest" href="manifest.json?v=15.9">
-  <link rel="stylesheet" href="style.css?v=15">
-</head>
-<body>
-<header class="topo">
-  <div class="topo-conteudo">
-    <span class="selo">ADMIN • FIREBASE V15.10</span>
-    <h1>Painel administrativo</h1>
-    <p>Controle completo da rifa pelo painel, sem editar código.</p>
-  </div>
-</header>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#111318"><title>Rifa Online V15.10</title><link rel="manifest" href="manifest.json?v=15.9"><meta name="theme-color" content="#121212"><link rel="apple-touch-icon" href="icon-192.png"><link rel="stylesheet" href="style.css?v=15.9"></head><body>
+<header class="topo"><div class="topo-conteudo"><span class="selo">RIFA ONLINE • FIREBASE V15.10</span><h1 id="nomeRifaTitulo">Escolha seus números</h1><p>São <strong id="quantidadeCabecalho">100</strong> números. Cada número custa <strong id="precoCabecalho">R$ 20,00</strong>.</p><p id="statusVendas" class="texto-apoio"></p></div></header>
 <main class="container">
-  <section class="card" id="acessoBox">
-    <div class="abas-acesso">
-      <button id="abaLogin" class="aba ativa" type="button">Entrar</button>
-      <button id="abaCadastro" class="aba" type="button">Criar cadastro</button>
-    </div>
 
-    <div id="loginForm">
-      <h2>Entrar</h2>
+<section id="premioBox" class="card premio-box oculto">
+  <img id="bannerPremio" class="banner-premio oculto" alt="Prêmio da rifa">
+  <div><span class="mini-selo">🎁 PRÊMIO</span><h2 id="nomePremio">Prêmio da rifa</h2><p id="descricaoPremio" class="texto-apoio"></p><p id="dataSorteioTexto" class="texto-apoio"></p></div>
+</section>
+<section class="card vencedor-chamada"><div><span class="mini-selo">🏆 RESULTADO DA RIFA</span><h2>Veja o vencedor sorteado</h2><p class="texto-apoio">O resultado oficial aparece para todos em tempo real.</p></div><a class="botao vencedor-btn" href="vencedor.html">Abrir página do vencedor</a></section>
+<section class="card"><h2>Andamento da rifa</h2><div class="dashboard-grid"><div class="dash-item"><span>Disponíveis</span><strong id="pubLivres">100</strong></div><div class="dash-item"><span>Reservados</span><strong id="pubReservados">0</strong></div><div class="dash-item"><span>Confirmados</span><strong id="pubConfirmados">0</strong></div><div class="dash-item"><span>Participantes</span><strong id="pubParticipantes">0</strong></div></div><div class="progresso"><div id="barraProgresso" class="progresso-barra"></div></div><p id="textoProgresso" class="texto-apoio">0 de 100 números confirmados.</p></section><section class="card"><div class="cabecalho-card"><div><h2>Números da rifa</h2><p>Toque nos números verdes para selecionar.</p></div><button id="btnAtualizar" class="botao secundario" type="button">Atualizar</button></div><div id="mensagemGrade" class="aviso">Conectando ao Firebase…</div><div id="gradeNumeros" class="grade"></div><div class="legenda"><span><i class="cor livre"></i>Livre</span><span><i class="cor selecionado"></i>Selecionado</span><span><i class="cor reservado"></i>Reservado</span><span><i class="cor confirmado"></i>Confirmado</span></div></section>
+<section class="card resumo"><h2>Seus números</h2><div class="resumo-linha"><span>Quantidade</span><strong id="quantidade">0</strong></div><div class="resumo-linha"><span>Números escolhidos</span><strong id="numerosEscolhidos">Nenhum</strong></div><div class="resumo-linha total"><span>Valor total</span><strong id="total">R$ 0,00</strong></div></section>
+<section id="formularioReservaBox" class="card"><h2>Preencha seus dados</h2><p class="texto-apoio">Os dados serão salvos no Firebase e os números aparecerão reservados para todos.</p><form id="formRifa" novalidate><div class="form-grid"><label>Nome completo<input id="nome" required placeholder="Digite seu nome completo"></label><label>Telefone<input id="telefone" inputmode="tel" required placeholder="(34) 99999-9999"></label><label>CPF<input id="cpf" inputmode="numeric" maxlength="14" required placeholder="000.000.000-00"></label><label>E-mail <small>(opcional)</small><input id="email" type="email" placeholder="seuemail@gmail.com"></label></div><label class="aceite"><input id="aceite" type="checkbox" required><span>Confirmo que os dados estão corretos.</span></label><button id="btnReservar" class="botao principal" type="submit">Reservar números</button></form></section>
+<section id="sucessoBox" class="card sucesso oculto"><div class="icone-sucesso">✓</div><h2>Reserva registrada!</h2><p>Faça o pagamento pela opção configurada pelo administrador.</p><div class="comprovante"><p><span>Código</span><strong id="codigoReserva"></strong></p><p><span>Números</span><strong id="numerosReserva"></strong></p><p><span>Total</span><strong id="valorReserva"></strong></p><p><span>Status</span><strong id="statusReserva">Aguardando confirmação</strong></p></div><a id="btnPagarMercadoPago" class="botao pagamento oculto" href="#" target="_blank" rel="noopener">Pagar no Mercado Pago</a><div id="pixBox" class="pix-box oculto"><h3>Pagar pela chave Pix</h3><p id="pixRecebedor" class="texto-apoio"></p><div class="pix-chave"><strong id="pixChave"></strong><button id="btnCopiarPix" class="botao copiar-pix" type="button">Copiar Pix</button></div></div><p id="avisoPagamento" class="aviso-pagamento oculto"></p><div class="confirmacao-cliente"><label>Nome usado no pagamento <small>(opcional)</small><input id="nomePagador" placeholder="Ex.: Ediel Rodrigues"></label><button id="btnInformarPagamento" class="botao confirmar-pagamento" type="button">✅ Já fiz o pagamento</button><p class="texto-apoio">A reserva só será confirmada depois da conferência do administrador.</p></div><button id="btnNovaReserva" class="botao secundario" type="button">Fazer outra reserva</button></section>
+
+<section class="card afiliado-box">
+  <details class="config-retratil">
+    <summary><span>🤝 Ganhe indicando amigos</span><small>Toque para abrir ou fechar</small></summary>
+    <div class="config-conteudo">
+      <p class="texto-apoio">Esta área fica oculta. Digite o seu CPF para cadastrar ou consultar somente os dados vinculados a ele. A comissão entra no saldo apenas depois que o pagamento da reserva indicada for confirmado pelo administrador.</p>
       <div class="form-grid">
-        <label>E-mail<input id="adminEmail" type="email" autocomplete="email" placeholder="seuemail@gmail.com"></label>
-        <label>Senha<input id="adminSenha" type="password" autocomplete="current-password" placeholder="Sua senha"></label>
+        <label>Seu CPF<input id="afCpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"></label>
+        <label>Nome completo<input id="afNome" placeholder="Seu nome completo"></label>
+        <label>Telefone<input id="afTelefone" inputmode="tel" placeholder="(34) 99999-9999"></label>
+        <label>Chave Pix<input id="afPix" placeholder="CPF, telefone, e-mail ou chave aleatória"></label>
       </div>
       <div class="linha-botoes">
-        <button id="btnEntrar" class="botao principal" type="button">Entrar</button>
-        <button id="btnEsqueciSenha" class="botao secundario" type="button">Esqueci a senha</button>
+        <button id="btnConsultarAfiliado" class="botao secundario" type="button">🔎 Consultar pelo CPF</button>
+        <button id="btnSalvarAfiliado" class="botao principal" type="button">💾 Criar/atualizar cadastro</button>
       </div>
-    </div>
-
-    <div id="cadastroForm" class="oculto">
-      <h2>Criar conta administrativa</h2>
-      <div class="form-grid">
-        <label>Nome completo<input id="cadNome" autocomplete="name" placeholder="Nome completo"></label>
-        <label>Telefone<input id="cadTelefone" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000"></label>
-        <label>E-mail<input id="cadEmail" type="email" autocomplete="email" placeholder="seuemail@gmail.com"></label>
-        <label>Senha<input id="cadSenha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></label>
-        <label>Confirmar senha<input id="cadConfirmarSenha" type="password" autocomplete="new-password" placeholder="Repita a senha"></label>
-      </div>
-      <button id="btnCadastrar" class="botao principal" type="button">Criar cadastro</button>
-      <p class="texto-apoio">A nova conta ficará aguardando aprovação de um administrador já autorizado.</p>
-    </div>
-    <p id="adminMensagem" class="aviso-pagamento"></p>
-  </section>
-
-  <section id="aguardandoBox" class="card oculto">
-    <h2>⏳ Cadastro aguardando aprovação</h2>
-    <p>Sua conta foi criada, mas ainda não foi autorizada para abrir o painel.</p>
-    <div class="linha-botoes">
-      <button id="btnAtualizarAprovacao" class="botao principal" type="button">Verificar novamente</button>
-      <button id="btnSairAguardando" class="botao cancelar" type="button">Sair</button>
-    </div>
-  </section>
-
-  <section id="barraAdmin" class="card oculto">
-    <div class="cabecalho-card">
-      <div class="perfil-resumo">
-        <div id="avatarAdmin" class="avatar-admin">A</div>
-        <div><h2 id="adminLogado">Administrador</h2><p id="adminStatus" class="texto-apoio">Online</p></div>
-      </div>
-      <div class="linha-botoes">
-        <button id="btnTema" class="botao secundario" type="button">🌙 Modo escuro</button>
-        <button id="btnNotificacoes" class="botao secundario" type="button">🔔 Ativar avisos</button>
-        <button id="btnSair" class="botao cancelar" type="button">🚪 Sair</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="perfilAdmin" class="card oculto">
-    <details>
-      <summary><strong>👤 Meu perfil</strong></summary>
-      <div class="form-grid espaco-topo">
-        <label>Nome<input id="perfilNome"></label>
-        <label>Telefone<input id="perfilTelefone" inputmode="tel"></label>
-        <label>E-mail<input id="perfilEmail" type="email"></label>
-        <label>Foto (URL opcional)<input id="perfilFoto" type="url" placeholder="https://..."></label>
-      </div>
-      <div class="linha-botoes">
-        <button id="btnSalvarPerfil" class="botao principal" type="button">Salvar perfil</button>
-        <button id="btnAlterarSenha" class="botao secundario" type="button">Alterar senha</button>
-      </div>
-      <p id="perfilUltimoAcesso" class="texto-apoio"></p>
-    </details>
-  </section>
-
-  <section id="dashboard" class="card oculto"><h2>📊 Visão geral da rifa</h2><div class="dashboard-grid"><div class="dash-item"><span>Disponíveis</span><strong id="dashLivres">100</strong></div><div class="dash-item"><span>Reservados</span><strong id="dashReservados">0</strong></div><div class="dash-item"><span>Confirmados</span><strong id="dashConfirmados">0</strong></div><div class="dash-item"><span>Participantes</span><strong id="dashParticipantes">0</strong></div><div class="dash-item"><span>Arrecadado</span><strong id="dashArrecadado">R$ 0,00</strong></div></div><div id="statusFerramentas" class="status-operacao">Ferramentas prontas para uso.</div><div class="acoes-topo-admin"><button id="btnExportarCsv" class="botao secundario" type="button">📄 Exportar CSV</button><button id="btnBackup" class="botao secundario" type="button">📥 Baixar backup</button><label class="botao secundario arquivo-btn">📤 Restaurar backup<input id="arquivoBackup" type="file" accept="application/json" hidden></label></div></section>
-
-  <section id="visitasAdmin" class="card oculto config-destaque">
-    <details class="config-retratil">
-      <summary>
-        <span>👁️ Visualizações da página</span>
-        <small>Toque para abrir ou fechar</small>
-      </summary>
-      <div class="config-conteudo">
-        <p class="texto-apoio">Contagem das entradas no site público da rifa, atualizada em tempo real.</p>
+      <p id="afMensagem" class="status-operacao"></p>
+      <div id="afPainel" class="afiliado-painel oculto">
         <div class="dashboard-grid">
-          <div class="dash-item"><span>Total de visualizações</span><strong id="visitasTotal">0</strong></div>
-          <div class="dash-item"><span>Visitantes únicos</span><strong id="visitasUnicos">0</strong></div>
-          <div class="dash-item"><span>Visualizações hoje</span><strong id="visitasHoje">0</strong></div>
+          <div class="dash-item"><span>Saldo disponível</span><strong id="afSaldo">R$ 0,00</strong></div>
+          <div class="dash-item"><span>Total ganho</span><strong id="afTotalGanhos">R$ 0,00</strong></div>
+          <div class="dash-item"><span>Indicações confirmadas</span><strong id="afIndicacoes">0</strong></div>
+          <div class="dash-item"><span>Total já pago</span><strong id="afTotalPago">R$ 0,00</strong></div>
         </div>
-        <p id="visitasUltimaAtualizacao" class="status-operacao">Aguardando dados do Firebase…</p>
+        <label>Seu link exclusivo de indicação<div class="consulta-cpf-linha"><input id="afLink" readonly><button id="btnCopiarLinkAfiliado" class="botao principal" type="button">Copiar link</button></div></label>
+        <h3>Compras indicadas</h3><div id="afListaComissoes"><p class="texto-apoio">Nenhuma comissão confirmada.</p></div>
       </div>
-    </details>
-  </section>
+    </div>
+  </details>
+</section>
+<section class="card consulta-cpf"><h2>Buscar minhas reservas pelo CPF</h2><p class="texto-apoio">Digite o mesmo CPF usado na reserva para consultar todas as reservas salvas no Firebase, mesmo em outro aparelho.</p><div class="consulta-cpf-linha"><input id="consultaCpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"><button id="btnBuscarCpf" class="botao principal" type="button">Buscar reservas</button></div><div id="mensagemCpf" class="aviso oculto"></div><div id="reservasCpf"></div></section>
 
-  <section id="novosAdmins" class="card oculto">
-    <h2>🛡️ Aprovação de administradores</h2>
-    <p class="texto-apoio">Aprove ou recuse novos cadastros sem abrir o Firebase.</p>
-    <button id="btnRecarregarPendentes" class="botao secundario" type="button">🔄 Verificar novamente</button>
-    <p id="statusPendentes" class="status-operacao" aria-live="polite"></p>
-    <div id="listaAdminsPendentes"></div>
-  </section>
+<section class="card repetir-card"><h2>Repetir números selecionados</h2><p class="texto-apoio">Ouça em voz alta os números escolhidos.</p><button id="btnRepetirNumeros" class="botao repetir" type="button">🔊 Repetir números selecionados</button><p id="mensagemRepetir" class="texto-apoio"></p></section>
+<section id="regulamentoBox" class="card oculto"><h2>📜 Regulamento</h2><div id="regulamentoTexto" class="texto-apoio texto-pre"></div></section></main><footer>Dados sincronizados pelo Firebase Realtime Database.</footer>
 
-
-  <section id="configRifa" class="card oculto config-destaque">
-    <details class="config-retratil">
-      <summary>
-        <span>⚙️ Configuração da rifa</span>
-        <small>Toque para abrir ou fechar</small>
-      </summary>
-      <div class="config-conteudo">
-        <p class="texto-apoio">As alterações são salvas no Firebase e aparecem para os clientes em tempo real.</p>
-        <div class="form-grid">
-          <label>Nome da rifa<input id="cfgNomeRifa" maxlength="80" placeholder="Rifa Online"></label>
-          <label>Valor de cada número (R$)<input id="cfgPrecoNumero" type="number" min="0.01" step="0.01" inputmode="decimal"></label>
-          <label>Quantidade de números<input id="cfgQuantidadeNumeros" type="number" min="1" max="1000" step="1"></label>
-          <label>Nome do prêmio<input id="cfgPremio" maxlength="100" placeholder="Prêmio principal"></label>
-          <label>Data do sorteio<input id="cfgDataSorteio" type="date"></label>
-          <label>Hora do sorteio<input id="cfgHoraSorteio" type="time"></label>
-          <label>Banner/foto do prêmio (URL)<input id="cfgBanner" type="url" placeholder="https://..."></label>
-          <label>WhatsApp de atendimento<input id="cfgWhatsapp" inputmode="tel" placeholder="5534999999999"></label>
-          <label>URL pública do site da rifa<input id="cfgUrlPublica" type="url" placeholder="https://seuusuario.github.io/sua-rifa/"></label>
-        </div>
-        <label>Descrição do prêmio<textarea id="cfgDescricao" rows="3" placeholder="Descreva o prêmio"></textarea></label>
-        <label>Regulamento<textarea id="cfgRegulamento" rows="5" placeholder="Regras e informações da rifa"></textarea></label>
-        <label class="aceite"><input id="cfgVendasAbertas" type="checkbox"><span>Vendas abertas para novas reservas</span></label>
-        <div class="linha-botoes">
-          <button id="btnSalvarConfigRifa" class="botao principal" type="button">💾 Salvar configurações</button>
-          <button id="btnRecarregarConfigRifa" class="botao secundario" type="button">🔄 Recarregar</button>
-        </div>
-        <p id="configRifaMensagem" class="status-operacao"></p>
-      </div>
-    </details>
-  </section>
-
-  <section id="configPagamento" class="card oculto config-destaque">
-    <details class="config-retratil">
-      <summary>
-        <span>💳 Links do Mercado Pago</span>
-        <small>Toque para abrir ou fechar</small>
-      </summary>
-      <div class="config-conteudo">
-        <p class="texto-apoio">Cadastre um link para cada quantidade. Os valores são calculados pelo preço atual de cada número.</p>
-        <div class="form-grid">
-          <label>Quantidade<input id="quantidadeLink" type="number" min="1" max="100"></label>
-          <label>Link<input id="urlLink" type="url" placeholder="https://mpago.la/..."></label>
-        </div>
-        <button id="btnSalvarLink" class="botao principal" type="button">Salvar link</button>
-        <div id="listaLinks"></div>
-      </div>
-    </details>
-  </section>
-  <section id="configPix" class="card oculto"><h2>Chave Pix</h2><div class="form-grid"><label>Chave Pix<input id="chavePix"></label><label>Nome do recebedor<input id="nomeRecebedorPix"></label></div><button id="btnSalvarPix" class="botao principal" type="button">Salvar chave Pix</button><button id="btnExcluirPix" class="botao excluir" type="button">🔒 Excluir chave Pix</button><p id="pixAdminMensagem" class="texto-apoio"></p></section>
-  <section id="sorteioAdmin" class="card oculto"><div class="cabecalho-card"><div><h2>🏆 Sorteio do prêmio</h2><p class="texto-apoio">Somente números confirmados participam.</p></div><a class="botao vencedor-btn" href="sorteio.html">Entrar na tela de sorteio</a></div></section>
-
-  <section id="resultadosSorteioAdmin" class="card oculto config-destaque">
-    <details class="config-retratil">
-      <summary>
-        <span>🏆 Resultado e histórico dos sorteios</span>
-        <small>Toque para abrir ou fechar</small>
-      </summary>
-      <div class="config-conteudo">
-        <section class="bloco-resultado-admin">
-          <div class="cabecalho-card">
-            <div><h3>Resultado atual</h3><p class="texto-apoio">É o vencedor exibido na página pública.</p></div>
-            <button id="btnApagarResultadoAtual" class="botao excluir-perigo" type="button">🔒 Apagar resultado atual</button>
-          </div>
-          <div id="resultadoAtualAdmin" class="resultado-admin-vazio">Nenhum resultado publicado.</div>
-        </section>
-        <section class="bloco-resultado-admin">
-          <div class="cabecalho-card">
-            <div><h3>Histórico de sorteios</h3><p id="contadorHistoricoSorteios" class="texto-apoio">0 resultado(s)</p></div>
-            <button id="btnApagarTodoHistorico" class="botao excluir-alerta" type="button">🔒 Limpar todo o histórico</button>
-          </div>
-          <div id="listaHistoricoSorteios" class="lista-historico-sorteios"><p class="texto-apoio">Nenhum sorteio salvo no histórico.</p></div>
-        </section>
-        <p id="statusResultadosSorteio" class="status-operacao"></p>
-      </div>
-    </details>
-  </section>
-
-
-  <section id="afiliadosAdmin" class="card oculto config-destaque">
-    <details class="config-retratil">
-      <summary><span>🤝 Programa de indicações</span><small>Toque para abrir ou fechar</small></summary>
-      <div class="config-conteudo">
-        <p class="texto-apoio">A comissão é somada somente quando você confirma o pagamento da reserva indicada.</p>
-        <div class="form-grid">
-          <label>Comissão por número confirmado (R$)<input id="cfgComissaoNumero" type="number" min="0" step="0.01" inputmode="decimal"></label>
-          <label>Valor mínimo para pagamento (R$)<input id="cfgMinimoSaque" type="number" min="0" step="0.01" inputmode="decimal"></label>
-        </div>
-        <label class="aceite"><input id="cfgAfiliadosAtivo" type="checkbox"><span>Programa de indicações ativo</span></label>
-        <button id="btnSalvarConfigAfiliados" class="botao principal" type="button">💾 Salvar configuração</button>
-        <p id="msgConfigAfiliados" class="status-operacao"></p>
-        <section class="painel-indicacoes-geral">
-          <h3>Resumo geral de todos os indicadores</h3>
-          <div class="grade-resumo-indicacoes">
-            <article><span>Saldo disponível total</span><strong id="afiliadosSaldoTotal">R$ 0,00</strong></article>
-            <article><span>Total ganho</span><strong id="afiliadosGanhosTotal">R$ 0,00</strong></article>
-            <article><span>Indicações confirmadas</span><strong id="afiliadosIndicacoesTotal">0</strong></article>
-            <article><span>Total já pago</span><strong id="afiliadosPagoTotal">R$ 0,00</strong></article>
-          </div>
-        </section>
-        <div class="cabecalho-card"><div><h3>Cadastros e saldos</h3><p id="contadorAfiliados" class="texto-apoio">0 cadastro(s)</p></div><button id="btnAtualizarAfiliados" class="botao secundario" type="button">🔄 Atualizar</button></div>
-        <div id="listaAfiliados"><p class="texto-apoio">Nenhum afiliado cadastrado.</p></div>
-        <section class="historico-indicacoes-admin">
-          <div class="cabecalho-card"><div><h3>Histórico de todas as indicações</h3><p id="contadorComissoes" class="texto-apoio">0 registro(s)</p></div></div>
-          <div id="listaComissoes"><p class="texto-apoio">Nenhuma indicação confirmada.</p></div>
-        </section>
-        <section class="historico-indicacoes-admin">
-          <div class="cabecalho-card"><div><h3>Histórico de pagamentos aos indicadores</h3><p id="contadorPagamentosAfiliados" class="texto-apoio">0 pagamento(s)</p></div></div>
-          <div id="listaPagamentosAfiliados"><p class="texto-apoio">Nenhum pagamento registrado.</p></div>
-        </section>
-      </div>
-    </details>
-  </section>
-  <section id="painel" class="card oculto"><div class="cabecalho-card"><div><h2>Reservas</h2><p id="contadorReservas"></p></div><div class="acoes-topo-admin"><button id="btnExcluirCanceladas" class="botao excluir-suave">🔒 Excluir canceladas</button><button id="btnExcluirReservadas" class="botao excluir-alerta">🔒 Excluir reservadas</button><button id="btnExcluirConfirmadas" class="botao excluir-perigo">🔒 Excluir confirmadas</button></div></div><label>Pesquisar<input id="pesquisa" placeholder="Nome, telefone, CPF, código ou número"></label><div id="listaReservas"></div></section>
-</main>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="firebase-config.js?v=15.11"></script>
-<script src="admin.js?v=15.11"></script>
-<footer class="rodape-versao"><p>Versão: V15.11</p><p>Última atualização: 16/07/2026</p></footer>
-</body></html>
+<footer class="rodape-versao"><p>Versão: V15.10</p><p>Última atualização: 16/07/2026</p></footer>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script><script src="firebase-config.js?v=15.9"></script><script src="app.js?v=15.9"></script></body></html>

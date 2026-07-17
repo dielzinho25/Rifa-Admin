@@ -12,36 +12,17 @@
 
 .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:16px 0}.dash-item{background:#f3f5f8;border:1px solid #dce1e8;border-radius:14px;padding:14px;text-align:center}.dash-item span{display:block;font-size:.85rem;color:#5c6470}.dash-item strong{display:block;font-size:1.35rem;margin-top:6px;color:#111827;font-weight:900;min-height:1.6em}.progresso{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:14px}.progresso-barra{height:100%;width:0;background:linear-gradient(90deg,#16a34a,#22c55e);transition:width .35s}.arquivo-btn{display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 
-/* V10 */
-.abas-acesso{display:flex;gap:8px;margin-bottom:18px}.aba{flex:1;padding:12px;border:1px solid #ddd;border-radius:12px;background:#f5f5f5;font-weight:800;cursor:pointer}.aba.ativa{background:#111;color:#fff}.linha-botoes{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.perfil-resumo{display:flex;gap:12px;align-items:center}.avatar-admin{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#111;color:#fff;font-size:22px;font-weight:900;background-size:cover;background-position:center}.espaco-topo{margin-top:16px}details summary{cursor:pointer;font-size:1.1rem}.admin-pendente{border:1px solid #ddd;border-radius:14px;padding:14px;margin-top:10px}.admin-pendente p{margin:5px 0}.status-online{color:#16833b;font-weight:800}.status-offline{color:#777}.oculto{display:none!important}
-body.tema-escuro{background:#0e0f12;color:#f4f4f4}body.tema-escuro .card{background:#191b20;color:#f4f4f4;border-color:#333}body.tema-escuro input,body.tema-escuro select{background:#101217;color:#fff;border-color:#41444b}body.tema-escuro .aba{background:#272a31;color:#fff;border-color:#41444b}body.tema-escuro .aba.ativa{background:#fff;color:#111}body.tema-escuro .texto-apoio{color:#bbb}body.tema-escuro .reserva-card,body.tema-escuro .admin-pendente{background:#14161a;border-color:#343840}
-@media(max-width:620px){.linha-botoes .botao{flex:1}.cabecalho-card{align-items:flex-start}.perfil-resumo{width:100%}}
+.consulta-cpf-linha{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}.consulta-cpf-linha input{width:100%;min-height:58px}.consulta-cpf #reservasCpf{margin-top:16px}.consulta-cpf .reserva-card{margin-top:12px}@media(max-width:620px){.consulta-cpf-linha{grid-template-columns:1fr}.consulta-cpf-linha .botao{width:100%}}
 
 /* V13: números do painel sempre visíveis */
 .dash-item strong{color:#111827!important;text-shadow:none!important}.tema-escuro .dash-item strong{color:#111827!important}.dash-item.carregando strong{opacity:.55}
 .status-operacao{margin-top:12px;padding:10px 12px;border-radius:10px;background:#101218;color:#d9dde5}.status-operacao.sucesso{background:#174f2b;color:#bdf4ce}.status-operacao.erro{background:#6c2327;color:#ffd0d3}
 
-.aviso-interno{position:fixed;left:16px;right:16px;top:16px;z-index:9999;display:flex;flex-direction:column;gap:5px;padding:16px 18px;border-radius:16px;background:#15251b;color:#fff;border:1px solid #2f9f54;box-shadow:0 12px 35px rgba(0,0,0,.4);transform:translateY(-160%);opacity:0;transition:.25s ease}.aviso-interno.mostrar{transform:translateY(0);opacity:1}.aviso-interno strong{font-size:1.05rem}.aviso-interno span{opacity:.92}.status-operacao.erro{color:#ff9da7}.status-operacao.sucesso{color:#83e2a0}
-
 /* V15 */
 textarea{width:100%;box-sizing:border-box;border:1px solid #343944;border-radius:16px;background:#101217;color:#f5f5f5;padding:16px;font:inherit;resize:vertical}
 .premio-box{overflow:hidden}.banner-premio{display:block;width:100%;max-height:360px;object-fit:cover;border-radius:18px;margin-bottom:18px}.texto-pre{white-space:pre-wrap;line-height:1.65}.status-aberto{color:#3ddc84!important;font-weight:800}.status-fechado{color:#ff6b72!important;font-weight:800}.vendas-fechadas{opacity:.8}.vendas-fechadas form{pointer-events:none}.config-destaque{border-color:#d9a31a}
 
-/* V15.2 — configuração retrátil */
-.config-retratil>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;font-size:1.65rem;font-weight:900;padding:2px 0}.config-retratil>summary::-webkit-details-marker{display:none}.config-retratil>summary small{font-size:.82rem;font-weight:700;color:#aeb4bf}.config-retratil>summary::after{content:"＋";width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#363c47;color:#fff;font-size:1.5rem;flex:0 0 auto}.config-retratil[open]>summary::after{content:"−"}.config-conteudo{padding-top:18px;border-top:1px solid #30353f;margin-top:16px}.config-retratil:not([open]) .config-conteudo{display:none}@media(max-width:620px){.config-retratil>summary{font-size:1.35rem}.config-retratil>summary small{display:none}}
-
 .rodape-versao{text-align:center;padding:24px 16px 38px;color:#8f96a3;font-size:13px}.rodape-versao p{margin:4px 0}
 
-/* V15.8 — resultado atual e histórico de sorteios retráteis */
-.bloco-resultado-admin{background:#111318;border:1px solid #30353f;border-radius:18px;padding:18px;margin-top:16px}
-.bloco-resultado-admin h3{margin:0 0 6px;font-size:24px}
-.resultado-admin-vazio{padding:18px;border:1px dashed #454b58;border-radius:14px;color:#aeb4c0;text-align:center}
-.resultado-atual-card,.historico-sorteio-item{background:#191c22;border:1px solid #343a46;border-radius:15px;padding:16px;margin-top:12px}
-.resultado-atual-card strong,.historico-sorteio-item strong{font-size:19px}
-.resultado-atual-card p,.historico-sorteio-item p{margin:7px 0;color:#d9dde5}
-.historico-sorteio-item .linha-botoes{margin-top:12px}
-.lista-historico-sorteios{max-height:620px;overflow:auto;padding-right:3px}
-@media(max-width:700px){.bloco-resultado-admin .cabecalho-card{align-items:stretch;flex-direction:column}.bloco-resultado-admin .cabecalho-card .botao{width:100%}.lista-historico-sorteios{max-height:520px}}
-
-/* V15.11 - painel geral de indicações */
-.painel-indicacoes-geral,.historico-indicacoes-admin{margin-top:20px;padding-top:18px;border-top:1px solid #30353f}.grade-resumo-indicacoes{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 20px}.grade-resumo-indicacoes article{background:#f4f5f8;color:#222936;border-radius:16px;padding:18px;text-align:center;min-height:112px;display:flex;flex-direction:column;justify-content:center}.grade-resumo-indicacoes span{color:#656c77;font-size:14px}.grade-resumo-indicacoes strong{font-size:25px;margin-top:8px}.afiliado-acoes,.linha-botoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.botao.pix-pagar{background:#6750c8}.registro-comissao,.registro-pagamento-afiliado{background:#111318;border:1px solid #30353f;border-radius:14px;padding:14px;margin-top:10px}.registro-comissao p,.registro-pagamento-afiliado p{margin:6px 0;color:#cdd0d6}.tag-comissao{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:900}.tag-comissao.disponivel{background:#6d5517;color:#ffe29a}.tag-comissao.paga{background:#174f2b;color:#aef0c4}.tag-comissao.cancelada{background:#62242a;color:#ffc3c7}@media(max-width:760px){.grade-resumo-indicacoes{grid-template-columns:1fr 1fr}.grade-resumo-indicacoes strong{font-size:22px}.afiliado-acoes .botao{width:100%}}
+/* V15.9 - indicação */
+.config-retratil>summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:1.35rem;font-weight:800;list-style:none}.config-retratil>summary::-webkit-details-marker{display:none}.config-retratil>summary:after{content:"＋";font-size:2rem}.config-retratil[open]>summary:after{content:"−"}.config-conteudo{padding-top:22px}.afiliado-painel{margin-top:20px;border-top:1px solid #343944;padding-top:20px}.afiliado-painel .dash-item strong{font-size:1.35rem}.linha-botoes{display:flex;gap:12px;flex-wrap:wrap}.linha-botoes .botao{flex:1;min-width:220px}
