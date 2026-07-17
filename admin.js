@@ -106,11 +106,106 @@ function desenharLinks(m){linksCache=m||{};const l=$('listaLinks');l.innerHTML='
 async function salvarLink(){const q=Number($('quantidadeLink').value),u=$('urlLink').value.trim();if(!Number.isInteger(q)||q<1||q>Number(configRifa.quantidadeNumeros||1000))return alert('Quantidade inválida.');try{const url=new URL(u);if(url.protocol!=='https:')throw 0;}catch(e){return alert('Link HTTPS inválido.');}await db.ref('rifa/configPublica/pagamentos/links/'+q).set(u);$('quantidadeLink').value='';$('urlLink').value='';}
 async function salvarPix(){const chave=$('chavePix').value.trim(),nome=$('nomeRecebedorPix').value.trim();if(chave.length<4)return alert('Digite uma chave válida.');await db.ref('rifa/configPublica/pagamentos/pix').set({chave,nome,atualizadoEm:Date.now()});alert('Pix salvo.');}
 
-let configAfiliados={ativo:true,valorPorNumero:0.20,minimoSaque:10},afiliadosCache={};
-async function carregarAfiliados(){try{const [cfg,afs]=await Promise.all([db.ref('rifa/configPublica/afiliados').once('value'),db.ref('rifa/afiliadosPorCpf').once('value')]);configAfiliados=Object.assign({ativo:true,valorPorNumero:0.20,minimoSaque:10},cfg.val()||{});afiliadosCache=afs.val()||{};$('cfgComissaoNumero').value=Number(configAfiliados.valorPorNumero||0.20);$('cfgMinimoSaque').value=Number(configAfiliados.minimoSaque||10);$('cfgAfiliadosAtivo').checked=configAfiliados.ativo!==false;desenharAfiliados();}catch(e){$('msgConfigAfiliados').textContent='Erro ao carregar: '+e.message;$('msgConfigAfiliados').className='status-operacao erro';}}
+let configAfiliados={ativo:true,valorPorNumero:0.20,minimoSaque:10},afiliadosCache={},comissoesCache={},pagamentosAfiliadosCache={};
+async function carregarAfiliados(){
+  try{
+    const [cfg,afs,coms,pags]=await Promise.all([
+      db.ref('rifa/configPublica/afiliados').once('value'),
+      db.ref('rifa/afiliadosPorCpf').once('value'),
+      db.ref('rifa/comissoes').once('value'),
+      db.ref('rifa/pagamentosAfiliados').once('value')
+    ]);
+    configAfiliados=Object.assign({ativo:true,valorPorNumero:0.20,minimoSaque:10},cfg.val()||{});
+    afiliadosCache=afs.val()||{};
+    comissoesCache=coms.val()||{};
+    pagamentosAfiliadosCache=pags.val()||{};
+    $('cfgComissaoNumero').value=Number(configAfiliados.valorPorNumero||0.20);
+    $('cfgMinimoSaque').value=Number(configAfiliados.minimoSaque||10);
+    $('cfgAfiliadosAtivo').checked=configAfiliados.ativo!==false;
+    desenharAfiliados();
+  }catch(e){
+    $('msgConfigAfiliados').textContent='Erro ao carregar: '+e.message;
+    $('msgConfigAfiliados').className='status-operacao erro';
+  }
+}
 async function salvarConfigAfiliados(){const valor=Number($('cfgComissaoNumero').value),minimo=Number($('cfgMinimoSaque').value);if(!Number.isFinite(valor)||valor<0)return alert('Comissão inválida.');if(!Number.isFinite(minimo)||minimo<0)return alert('Valor mínimo inválido.');await db.ref('rifa/configPublica/afiliados').set({ativo:$('cfgAfiliadosAtivo').checked,valorPorNumero:valor,minimoSaque:minimo,atualizadoEm:firebase.database.ServerValue.TIMESTAMP});$('msgConfigAfiliados').textContent='Configuração salva.';$('msgConfigAfiliados').className='status-operacao sucesso';await carregarAfiliados();}
-function desenharAfiliados(){const box=$('listaAfiliados'),lista=Object.values(afiliadosCache||{}).sort((a,b)=>Number(b.saldoDisponivel||0)-Number(a.saldoDisponivel||0));$('contadorAfiliados').textContent=lista.length+' cadastro(s)';if(!lista.length){box.innerHTML='<p class="texto-apoio">Nenhum afiliado cadastrado.</p>';return;}box.innerHTML='';lista.forEach(a=>{const d=document.createElement('article');d.className='reserva-admin';d.innerHTML='<div><strong>'+esc(a.nome||'Sem nome')+'</strong><p>CPF: '+esc(a.cpf||'')+' • Telefone: '+esc(a.telefone||'')+'</p><p>Pix: '+esc(a.pix||'')+'</p><p>Código: '+esc(a.codigo||'')+'</p><p><b>Saldo disponível:</b> '+moeda(a.saldoDisponivel||0)+' • <b>Total ganho:</b> '+moeda(a.totalGanhos||0)+' • <b>Indicações:</b> '+Number(a.totalIndicacoes||0)+'</p></div>';const row=document.createElement('div');row.className='linha-botoes';const w=document.createElement('button');w.className='botao whatsapp';w.textContent='💬 WhatsApp';w.onclick=()=>{let t=String(a.telefone||'').replace(/\D/g,'');if(!t)return alert('Sem telefone.');if(!t.startsWith('55'))t='55'+t;open('https://wa.me/'+t+'?text='+encodeURIComponent('Olá, '+(a.nome||'')+'! Seu saldo de indicações é '+moeda(a.saldoDisponivel||0)+'.'),'_blank');};const pg=document.createElement('button');pg.className='botao confirmar';pg.textContent='💸 Marcar saldo como pago';pg.onclick=()=>pagarAfiliado(a);row.append(w,pg);d.appendChild(row);box.appendChild(d);});}
-async function pagarAfiliado(a){const saldo=Number(a.saldoDisponivel||0);if(saldo<=0)return alert('Este afiliado não possui saldo disponível.');if(!proteger('Marcar '+moeda(saldo)+' como pago para '+a.nome+'?'))return;const cpf=a.cpf;const updates={};updates['rifa/afiliadosPorCpf/'+cpf+'/saldoDisponivel']=0;updates['rifa/afiliadosPorCpf/'+cpf+'/totalPago']=Number(a.totalPago||0)+saldo;updates['rifa/afiliadosPorCpf/'+cpf+'/ultimoPagamentoEm']=firebase.database.ServerValue.TIMESTAMP;const cs=await db.ref('rifa/comissoes').orderByChild('afiliadoCpf').equalTo(cpf).once('value');cs.forEach(c=>{if((c.val()||{}).status==='disponivel')updates['rifa/comissoes/'+c.key+'/status']='paga';});await db.ref().update(updates);await carregarAfiliados();}
+function atualizarResumoAfiliados(lista){
+  const saldo=lista.reduce((t,a)=>t+Number(a.saldoDisponivel||0),0);
+  const ganhos=lista.reduce((t,a)=>t+Number(a.totalGanhos||0),0);
+  const indicacoes=lista.reduce((t,a)=>t+Number(a.totalIndicacoes||0),0);
+  const pago=lista.reduce((t,a)=>t+Number(a.totalPago||0),0);
+  if($('afiliadosSaldoTotal'))$('afiliadosSaldoTotal').textContent=moeda(saldo);
+  if($('afiliadosGanhosTotal'))$('afiliadosGanhosTotal').textContent=moeda(ganhos);
+  if($('afiliadosIndicacoesTotal'))$('afiliadosIndicacoesTotal').textContent=String(indicacoes);
+  if($('afiliadosPagoTotal'))$('afiliadosPagoTotal').textContent=moeda(pago);
+}
+function copiarTextoSeguro(texto,mensagem){
+  const t=String(texto||'').trim();if(!t)return alert('Nenhum dado cadastrado.');
+  if(navigator.clipboard&&location.protocol==='https:')navigator.clipboard.writeText(t).then(()=>alert(mensagem||'Copiado.')).catch(()=>prompt('Copie:',t));else prompt('Copie:',t);
+}
+async function prepararPixAfiliado(a){
+  const saldo=Number(a.saldoDisponivel||0),pix=String(a.pix||'').trim();
+  if(saldo<=0)return alert('Este indicador não possui saldo disponível.');
+  if(!pix)return alert('Este indicador não cadastrou uma chave Pix.');
+  const texto='Pagamento de comissão da rifa\nBeneficiário: '+(a.nome||'')+'\nCPF: '+(a.cpf||'')+'\nValor: '+moeda(saldo)+'\nChave Pix: '+pix;
+  try{await navigator.clipboard.writeText(pix);}catch(_){ }
+  if(navigator.share){try{await navigator.share({title:'Pagamento Pix de comissão',text:texto});return;}catch(_){ }}
+  alert('Chave Pix copiada.\n\nValor para pagar: '+moeda(saldo)+'\nChave: '+pix+'\n\nAbra seu banco, faça o Pix e depois toque em “Confirmar Pix enviado”.');
+}
+function desenharComissoes(){
+  const box=$('listaComissoes');if(!box)return;
+  const lista=Object.values(comissoesCache||{}).sort((a,b)=>Number(b.confirmadoEm||0)-Number(a.confirmadoEm||0));
+  $('contadorComissoes').textContent=lista.length+' registro(s)';
+  if(!lista.length){box.innerHTML='<p class="texto-apoio">Nenhuma indicação confirmada.</p>';return;}
+  box.innerHTML='';
+  lista.forEach(c=>{
+    const af=afiliadosCache[c.afiliadoCpf]||{};
+    const d=document.createElement('article');d.className='registro-comissao';
+    d.innerHTML='<div><strong>'+esc(af.nome||c.afiliadoCpf||'Indicador')+'</strong> <span class="tag-comissao '+esc(c.status||'disponivel')+'">'+esc(c.status==='paga'?'Paga':c.status==='cancelada'?'Cancelada':'Disponível')+'</span></div><p><b>Reserva:</b> '+esc(c.reservaId||'-')+'</p><p><b>Quantidade:</b> '+Number(c.quantidade||0)+' número(s) • <b>Comissão:</b> '+moeda(c.valor||0)+'</p><p><b>CPF do indicador:</b> '+esc(c.afiliadoCpf||'-')+'</p><p><b>Confirmada em:</b> '+(c.confirmadoEm?new Date(c.confirmadoEm).toLocaleString('pt-BR'):'-')+'</p>';
+    box.appendChild(d);
+  });
+}
+function desenharPagamentosAfiliados(){
+  const box=$('listaPagamentosAfiliados');if(!box)return;
+  const lista=Object.values(pagamentosAfiliadosCache||{}).sort((a,b)=>Number(b.pagoEm||0)-Number(a.pagoEm||0));
+  $('contadorPagamentosAfiliados').textContent=lista.length+' pagamento(s)';
+  if(!lista.length){box.innerHTML='<p class="texto-apoio">Nenhum pagamento registrado.</p>';return;}
+  box.innerHTML='';
+  lista.forEach(p=>{
+    const d=document.createElement('article');d.className='registro-pagamento-afiliado';
+    d.innerHTML='<strong>'+esc(p.nome||'Indicador')+'</strong><p><b>Valor:</b> '+moeda(p.valor||0)+'</p><p><b>CPF:</b> '+esc(p.cpf||'-')+' • <b>Pix:</b> '+esc(p.pix||'-')+'</p><p><b>Pago em:</b> '+(p.pagoEm?new Date(p.pagoEm).toLocaleString('pt-BR'):'-')+'</p>';
+    box.appendChild(d);
+  });
+}
+function desenharAfiliados(){
+  const box=$('listaAfiliados'),lista=Object.values(afiliadosCache||{}).sort((a,b)=>Number(b.saldoDisponivel||0)-Number(a.saldoDisponivel||0));
+  $('contadorAfiliados').textContent=lista.length+' cadastro(s)';
+  atualizarResumoAfiliados(lista);desenharComissoes();desenharPagamentosAfiliados();
+  if(!lista.length){box.innerHTML='<p class="texto-apoio">Nenhum afiliado cadastrado.</p>';return;}
+  box.innerHTML='';
+  lista.forEach(a=>{
+    const d=document.createElement('article');d.className='reserva-admin';
+    d.innerHTML='<div><strong>'+esc(a.nome||'Sem nome')+'</strong><p>CPF: '+esc(a.cpf||'')+' • Telefone: '+esc(a.telefone||'')+'</p><p>Pix: '+esc(a.pix||'Não cadastrada')+'</p><p>Código: '+esc(a.codigo||'')+'</p><div class="grade-resumo-indicacoes"><article><span>Saldo disponível</span><strong>'+moeda(a.saldoDisponivel||0)+'</strong></article><article><span>Total ganho</span><strong>'+moeda(a.totalGanhos||0)+'</strong></article><article><span>Indicações</span><strong>'+Number(a.totalIndicacoes||0)+'</strong></article><article><span>Total já pago</span><strong>'+moeda(a.totalPago||0)+'</strong></article></div></div>';
+    const row=document.createElement('div');row.className='afiliado-acoes';
+    const w=document.createElement('button');w.className='botao whatsapp';w.textContent='💬 WhatsApp';w.onclick=()=>{let t=String(a.telefone||'').replace(/\D/g,'');if(!t)return alert('Sem telefone.');if(!t.startsWith('55'))t='55'+t;open('https://wa.me/'+t+'?text='+encodeURIComponent('Olá, '+(a.nome||'')+'! Seu saldo de indicações é '+moeda(a.saldoDisponivel||0)+'.'),'_blank');};
+    const cp=document.createElement('button');cp.className='botao secundario';cp.textContent='📋 Copiar chave Pix';cp.onclick=()=>copiarTextoSeguro(a.pix,'Chave Pix copiada.');
+    const px=document.createElement('button');px.className='botao pix-pagar';px.textContent='💠 Preparar Pix';px.onclick=()=>prepararPixAfiliado(a);
+    const pg=document.createElement('button');pg.className='botao confirmar';pg.textContent='✅ Confirmar Pix enviado';pg.onclick=()=>pagarAfiliado(a);
+    row.append(w,cp,px,pg);d.appendChild(row);box.appendChild(d);
+  });
+}
+async function pagarAfiliado(a){
+  const saldo=Number(a.saldoDisponivel||0);if(saldo<=0)return alert('Este indicador não possui saldo disponível.');
+  if(!proteger('Você já enviou o Pix de '+moeda(saldo)+' para '+a.nome+' e quer registrar como pago?'))return;
+  const cpf=a.cpf,pagRef=db.ref('rifa/pagamentosAfiliados').push(),updates={};
+  updates['rifa/afiliadosPorCpf/'+cpf+'/saldoDisponivel']=0;
+  updates['rifa/afiliadosPorCpf/'+cpf+'/totalPago']=Number(a.totalPago||0)+saldo;
+  updates['rifa/afiliadosPorCpf/'+cpf+'/ultimoPagamentoEm']=firebase.database.ServerValue.TIMESTAMP;
+  updates['rifa/pagamentosAfiliados/'+pagRef.key]={pagamentoId:pagRef.key,cpf,nome:a.nome||'',telefone:a.telefone||'',pix:a.pix||'',valor:saldo,status:'pago',pagoEm:firebase.database.ServerValue.TIMESTAMP,pagoPor:usuarioAtual?usuarioAtual.uid:''};
+  const cs=await db.ref('rifa/comissoes').orderByChild('afiliadoCpf').equalTo(cpf).once('value');
+  cs.forEach(c=>{if((c.val()||{}).status==='disponivel'){updates['rifa/comissoes/'+c.key+'/status']='paga';updates['rifa/comissoes/'+c.key+'/pagoEm']=firebase.database.ServerValue.TIMESTAMP;updates['rifa/comissoes/'+c.key+'/pagamentoId']=pagRef.key;}});
+  await db.ref().update(updates);await carregarAfiliados();alert('Pagamento registrado no histórico.');
+}
 async function creditarComissao(r){
   if(configAfiliados.ativo===false)return;
   let codigo=String(r.indicadorCodigo||'').trim().toUpperCase(),cpf=String(r.indicadorCpf||'');
@@ -245,13 +340,13 @@ function ouvirVisualizacoes(){
     }
   });
 }
-function ouvirTudo(){ouvirVisualizacoes();db.ref('rifa/resultadoAtual').on('value',s=>desenharResultadoAtual(s.val()),e=>statusResultado('Erro ao ler resultado atual: '+e.message,true));db.ref('rifa/historicoSorteios').on('value',s=>desenharHistoricoSorteios(s.val()||{}),e=>statusResultado('Erro ao ler histórico: '+e.message,true));db.ref('rifa/configPublica/afiliados').on('value',snap=>{configAfiliados=Object.assign({ativo:true,valorPorNumero:0.20,minimoSaque:10},snap.val()||{});if($('cfgComissaoNumero')){$('cfgComissaoNumero').value=Number(configAfiliados.valorPorNumero||0.20);$('cfgMinimoSaque').value=Number(configAfiliados.minimoSaque||10);$('cfgAfiliadosAtivo').checked=configAfiliados.ativo!==false;}});db.ref('rifa/afiliadosPorCpf').on('value',snap=>{afiliadosCache=snap.val()||{};if($('listaAfiliados'))desenharAfiliados();});db.ref('rifa/configPublica/rifa').on('value',snap=>{configRifa=Object.assign({precoNumero:20,quantidadeNumeros:100,vendasAbertas:true},snap.val()||{});carregarConfigRifa();desenharLinks(linksCache);atualizarDashboard();});db.ref('rifa/configPublica/pagamentos').on('value',s=>{const p=s.val()||{},links=p.links||{},pix=p.pix||{};$('chavePix').value=pix.chave||'';$('nomeRecebedorPix').value=pix.nome||'';$('pixAdminMensagem').textContent=pix.chave?'Chave cadastrada: '+pix.chave:'Nenhuma chave cadastrada.';desenharLinks(links);});db.ref('rifa/numeros').on('value',s=>{numerosCache=s.val()||{};atualizarDashboard();},e=>statusFerramenta('Erro ao ler números: '+e.message,'erro'));db.ref('rifa/reservas').on('value',s=>{reservasCache=s.val()||{};const vals=Object.values(reservasCache),resumo={total:vals.length,pagamentos:vals.filter(r=>r.status==='pagamento_informado').length};if(!primeiraLeituraReservas){if(resumo.total>resumoAnterior.total)avisar('Nova reserva','Uma nova reserva foi registrada.');if(resumo.pagamentos>resumoAnterior.pagamentos)avisar('Pagamento informado','Um cliente informou que realizou o pagamento.');}primeiraLeituraReservas=false;resumoAnterior=resumo;desenharReservas();atualizarDashboard();statusFerramenta('Painel atualizado em '+new Date().toLocaleTimeString('pt-BR')+'.','sucesso');},e=>statusFerramenta('Erro ao ler reservas: '+e.message,'erro'));}
+function ouvirTudo(){ouvirVisualizacoes();db.ref('rifa/resultadoAtual').on('value',s=>desenharResultadoAtual(s.val()),e=>statusResultado('Erro ao ler resultado atual: '+e.message,true));db.ref('rifa/historicoSorteios').on('value',s=>desenharHistoricoSorteios(s.val()||{}),e=>statusResultado('Erro ao ler histórico: '+e.message,true));db.ref('rifa/configPublica/afiliados').on('value',snap=>{configAfiliados=Object.assign({ativo:true,valorPorNumero:0.20,minimoSaque:10},snap.val()||{});if($('cfgComissaoNumero')){$('cfgComissaoNumero').value=Number(configAfiliados.valorPorNumero||0.20);$('cfgMinimoSaque').value=Number(configAfiliados.minimoSaque||10);$('cfgAfiliadosAtivo').checked=configAfiliados.ativo!==false;}});db.ref('rifa/afiliadosPorCpf').on('value',snap=>{afiliadosCache=snap.val()||{};if($('listaAfiliados'))desenharAfiliados();});db.ref('rifa/comissoes').on('value',snap=>{comissoesCache=snap.val()||{};if($('listaComissoes'))desenharAfiliados();});db.ref('rifa/pagamentosAfiliados').on('value',snap=>{pagamentosAfiliadosCache=snap.val()||{};if($('listaPagamentosAfiliados'))desenharAfiliados();});db.ref('rifa/configPublica/rifa').on('value',snap=>{configRifa=Object.assign({precoNumero:20,quantidadeNumeros:100,vendasAbertas:true},snap.val()||{});carregarConfigRifa();desenharLinks(linksCache);atualizarDashboard();});db.ref('rifa/configPublica/pagamentos').on('value',s=>{const p=s.val()||{},links=p.links||{},pix=p.pix||{};$('chavePix').value=pix.chave||'';$('nomeRecebedorPix').value=pix.nome||'';$('pixAdminMensagem').textContent=pix.chave?'Chave cadastrada: '+pix.chave:'Nenhuma chave cadastrada.';desenharLinks(links);});db.ref('rifa/numeros').on('value',s=>{numerosCache=s.val()||{};atualizarDashboard();},e=>statusFerramenta('Erro ao ler números: '+e.message,'erro'));db.ref('rifa/reservas').on('value',s=>{reservasCache=s.val()||{};const vals=Object.values(reservasCache),resumo={total:vals.length,pagamentos:vals.filter(r=>r.status==='pagamento_informado').length};if(!primeiraLeituraReservas){if(resumo.total>resumoAnterior.total)avisar('Nova reserva','Uma nova reserva foi registrada.');if(resumo.pagamentos>resumoAnterior.pagamentos)avisar('Pagamento informado','Um cliente informou que realizou o pagamento.');}primeiraLeituraReservas=false;resumoAnterior=resumo;desenharReservas();atualizarDashboard();statusFerramenta('Painel atualizado em '+new Date().toLocaleTimeString('pt-BR')+'.','sucesso');},e=>statusFerramenta('Erro ao ler reservas: '+e.message,'erro'));}
 
 let recarregouPorAtualizacao=false;
 async function registrarServiceWorker(){
   if(!('serviceWorker' in navigator))return;
   try{
-    const reg=await navigator.serviceWorker.register('service-worker.js?v=15.7',{updateViaCache:'none'});
+    const reg=await navigator.serviceWorker.register('service-worker.js?v=15.11',{updateViaCache:'none'});
     await reg.update().catch(()=>{});
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
       if(recarregouPorAtualizacao)return;

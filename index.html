@@ -209,8 +209,25 @@
         <label class="aceite"><input id="cfgAfiliadosAtivo" type="checkbox"><span>Programa de indicações ativo</span></label>
         <button id="btnSalvarConfigAfiliados" class="botao principal" type="button">💾 Salvar configuração</button>
         <p id="msgConfigAfiliados" class="status-operacao"></p>
+        <section class="painel-indicacoes-geral">
+          <h3>Resumo geral de todos os indicadores</h3>
+          <div class="grade-resumo-indicacoes">
+            <article><span>Saldo disponível total</span><strong id="afiliadosSaldoTotal">R$ 0,00</strong></article>
+            <article><span>Total ganho</span><strong id="afiliadosGanhosTotal">R$ 0,00</strong></article>
+            <article><span>Indicações confirmadas</span><strong id="afiliadosIndicacoesTotal">0</strong></article>
+            <article><span>Total já pago</span><strong id="afiliadosPagoTotal">R$ 0,00</strong></article>
+          </div>
+        </section>
         <div class="cabecalho-card"><div><h3>Cadastros e saldos</h3><p id="contadorAfiliados" class="texto-apoio">0 cadastro(s)</p></div><button id="btnAtualizarAfiliados" class="botao secundario" type="button">🔄 Atualizar</button></div>
         <div id="listaAfiliados"><p class="texto-apoio">Nenhum afiliado cadastrado.</p></div>
+        <section class="historico-indicacoes-admin">
+          <div class="cabecalho-card"><div><h3>Histórico de todas as indicações</h3><p id="contadorComissoes" class="texto-apoio">0 registro(s)</p></div></div>
+          <div id="listaComissoes"><p class="texto-apoio">Nenhuma indicação confirmada.</p></div>
+        </section>
+        <section class="historico-indicacoes-admin">
+          <div class="cabecalho-card"><div><h3>Histórico de pagamentos aos indicadores</h3><p id="contadorPagamentosAfiliados" class="texto-apoio">0 pagamento(s)</p></div></div>
+          <div id="listaPagamentosAfiliados"><p class="texto-apoio">Nenhum pagamento registrado.</p></div>
+        </section>
       </div>
     </details>
   </section>
@@ -219,7 +236,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="firebase-config.js?v=15.9"></script>
-<script src="admin.js?v=15.9"></script>
-<footer class="rodape-versao"><p>Versão: V15.10</p><p>Última atualização: 16/07/2026</p></footer>
+<script src="firebase-config.js?v=15.11"></script>
+<script src="admin.js?v=15.11"></script>
+<footer class="rodape-versao"><p>Versão: V15.11</p><p>Última atualização: 16/07/2026</p></footer>
 </body></html>
