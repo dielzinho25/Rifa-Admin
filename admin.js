@@ -2,7 +2,7 @@
 'use strict';
 let reservasCache={}, numerosCache={}, linksCache={}, usuarioAtual=null, configRifa={precoNumero:20,quantidadeNumeros:100,vendasAbertas:true}, ouvindo=false, primeiraLeituraReservas=true, resumoAnterior={total:0,pagamentos:0};
 const $=id=>document.getElementById(id), moeda=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}), esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const secoes=['barraAdmin','perfilAdmin','dashboard','visitasAdmin','novosAdmins','configRifa','configPagamento','configPix','sorteioAdmin','resultadosSorteioAdmin','painel'];
+const secoes=['barraAdmin','perfilAdmin','dashboard','visitasAdmin','novosAdmins','configRifa','configPagamento','configPix','sorteioAdmin','resultadosSorteioAdmin','afiliadosAdmin','painel'];
 function mensagem(t,erro=false){const el=$('adminMensagem');el.textContent=t||'';el.style.color=erro?'#b00020':'';}
 async function adminRef(uid){
   if(!uid)return false;
@@ -346,7 +346,7 @@ let recarregouPorAtualizacao=false;
 async function registrarServiceWorker(){
   if(!('serviceWorker' in navigator))return;
   try{
-    const reg=await navigator.serviceWorker.register('service-worker.js?v=15.12',{updateViaCache:'none'});
+    const reg=await navigator.serviceWorker.register('service-worker.js?v=15.13',{updateViaCache:'none'});
     await reg.update().catch(()=>{});
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
       if(recarregouPorAtualizacao)return;
